@@ -102,7 +102,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(SOURCES)/armboot.c $(SOURCES)/armboot.h
 
 #---------------------------------------------------------------------------------
 run:
