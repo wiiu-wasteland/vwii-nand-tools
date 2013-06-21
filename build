@@ -119,6 +119,14 @@ build_syntax() {
   echo
 }
 
+# check if the necessary environment variables are set
+if [ -z "$DEVKITPPC" ] || [ -z "$DEVKITARM" ] || [ -z "$DEVKITPRO" ] ; then
+  echo
+  echo "you must set DEVKITPRO, DEVKITARM and DEVKITPPC environment variables."
+  echo
+  exit 1
+fi
+
 if [ "$1" = "all" ] ; then
   build_all
  elif [ "$1" == "nswitch" ] ; then

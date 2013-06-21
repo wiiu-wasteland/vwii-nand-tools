@@ -12,7 +12,7 @@ CFLAGS += -DCAN_HAZ_USBGECKO
 ASFLAGS += -D_LANGUAGE_ASSEMBLY
 CFLAGS += -DCAN_HAZ_IRQ -DCAN_HAZ_IPC
 LDSCRIPT = mini.ld
-LIBS = -lgcc -lz
+LIBS = -lgcc
 
 ELFLOADER = target/elfloader.bin
 MAKEBIN = $(CURDIR)/makebin.py
@@ -36,7 +36,7 @@ $(TARGET_STRIPPED): $(TARGET)
 	@$(STRIP) $< -o $@
 
 $(TARGET_BIN): $(TARGET_STRIPPED) $(ELFLOADER)
-	echo  "MAKEBIN	$@"
+	@echo  "MAKEBIN	$@"
 	@$(MAKEBIN) $(ELFLOADER) $< $@
 
 upload: $(TARGET_BIN)
