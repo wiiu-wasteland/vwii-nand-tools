@@ -1,48 +1,114 @@
 #!/bin/bash
+# build script for nswitch and armboot
+#
+# carver <beneliezer@gmail.com>
+#
+# syntax: ./build < all | armboot | nswitch | clean >
+#
+
+# set -x
 
 CURDIR=`pwd`
+NSWITCH=$CURDIR/nswitch
+ARMBOOT=$CURDIR/armboot
+PUBDIR=/var/www/upload/
 
-if [ "$1" = "all" ] ; then
+build_all() {
   echo "compiling armboot ..."
   echo
-  cd $CURDIR/armboot && make
-  cp $CURDIR/armboot/target/armboot.bin $CURDIR/armboot.bin
+
+  # build armboot
+  cd $ARMBOOT && make
   echo
+  echo "copying compiled binary to $CURDIR."
+  cp $ARMBOOT/target/armboot.bin $CURDIR/armboot.bin
+  echo
+
+  # run raw2c against armboot.bin
+  echo "generating .c and .h files from armboot.bin, moving to $NSWITCH/source."
   cd $CURDIR && $DEVKITARM/bin/raw2c armboot.bin
-  mv $CURDIR/armboot.c $CURDIR/armboot.h $CURDIR/nswitch/source
+  mv $CURDIR/armboot.c $CURDIR/armboot.h $NSWITCH/source
   echo
+
+  # build nswitch
   echo "compiling nswitch ..."
+  cd $NSWITCH && make
   echo
-  cd $CURDIR/nswitch && make
+  echo "copying boot.dol to $CURDIR ..."
+  cp $NSWITCH/boot.dol $CURDIR/boot.dol
   echo
-  echo "copying binaries too project root ($CURDIR) ..."
-  cp $CURDIR/nswitch/boot.dol $CURDIR/boot.dol
-  echo
+
+  # print sha1 checksums
   echo "SHA1 checksums: "
   shasum $CURDIR/armboot.bin
   shasum $CURDIR/boot.dol
   echo
+
+  # create tarball of compiled binaries
   tar -cvf $CURDIR/compiled.tar $CURDIR/armboot.bin $CURDIR/boot.dol
   echo
   echo "binaries have been compressed into $CURDIR/compiled.tar"
- elif [ "$1" == "nswitch" ] ; then
+
+  # check if PUBDIR exists, if so ask user if they'd like to publish the archive.
+  if [ -d $PUBDIR ] ; then
+    if [ -f $CURDIR/compiled.tar ] ; then
+      echo -n "move compiled.tar to $PUBDIR? [y/n]: "
+      read response
+      if [ "$response" == "y" ] ; then
+        mv $CURDIR/compiled.tar $PUBDIR
+        echo "archive moved."
+        echo
+      else
+        exit 1
+      fi
+    fi
+  fi
+
+}
+
+build_nswitch() {
+  # check if armboot.bin exists before compiling nswitch, if not, exit.
+  if [ ! -f $CURDIR/armboot.bin ] ; then
+    echo "armboot.bin not found in $CURDIR. build armboot and try again."
+	exit 1
+  fi
+
+  # run raw2c against armboot.bin, and move to build directory
   cd $CURDIR && $DEVKITARM/bin/raw2c armboot.bin
-  mv $CURDIR/armboot.c $CURDIR/armboot.h $CURDIR/nswitch/source
   echo
-  cd $CURDIR/nswitch && make
-  cp $CURDIR/nswitch/boot.dol $CURDIR/boot.dol
+  echo "moving armboot.c and armboot.h to $NSWITCH/source"
+  mv $CURDIR/armboot.c $CURDIR/armboot.h $NSWITCH/source
   echo
+
+  # build nswitch, move to project root.
+  cd $NSWITCH && make
+  cp $NSWITCH/boot.dol $CURDIR/boot.dol
+  echo
+
+  # print sha1 checksum of boot.dol
   shasum $CURDIR/boot.dol
- elif [ "$1" == "armboot" ] ; then
-  cd $CURDIR/armboot && make
+}
+
+build_armboot() {
+  # build armboot.bin
+  cd $ARMBOOT && make
+
+  # copy armboot to project root.
   cp $CURDIR/armboot/target/armboot.bin $CURDIR/armboot.bin
   echo
+
+  # print sha1 checksum of armboot.bin
   shasum $CURDIR/armboot.bin
- elif [ "$1" == "clean" ] ; then
+}
+
+build_clean() {
+  # clean up past builds/archives
   rm -rf $CURDIR/armboot.* $CURDIR/boot.dol $CURDIR/archive.zip $CURDIR/compiled.tar
-  cd $CURDIR/armboot && make clean
-  cd $CURDIR/nswitch && make clean
- elif [ "$1" == "" ] ; then
+  cd $ARMBOOT && make clean
+  cd $NSWITCH && make clean
+}
+
+build_syntax() {
   echo "build.sh - carver #vwii"
   echo
   echo "syntax: ./build { all | armboot | nswitch | clean }"
@@ -51,5 +117,17 @@ if [ "$1" = "all" ] ; then
   echo "  nswitch - build only nswitch source"
   echo "  clean   - cleanup previous build processes"
   echo
+}
+
+if [ "$1" = "all" ] ; then
+  build_all
+ elif [ "$1" == "nswitch" ] ; then
+  build_nswitch
+ elif [ "$1" == "armboot" ] ; then
+  build_armboot
+ elif [ "$1" == "clean" ] ; then
+  build_clean
+ else
+  build_syntax
 fi
 
