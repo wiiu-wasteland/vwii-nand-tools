@@ -27,6 +27,7 @@
 #include <malloc.h>
 
 #include "iospatch.h"
+#include "armboot.h"
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
                 ((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
@@ -142,10 +143,25 @@ int main() {
 	printf("Loading IOS 254.\n");
 	__ES_Init();
 	u32 numviews;
+                /*** Boot mini from mem code by giantpune ***/
+                void *mini = memalign(32, armboot_size);  
+                if(!mini) 
+                        return 0;    
+  
+                memcpy(mini, armboot, armboot_size);  
+                DCFlushRange(mini, armboot_size);               
+   
+                *(u32*)0xc150f000 = 0x424d454d;  
+                asm volatile("eieio");  
+  
+                *(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
+                asm volatile("eieio");
 
 	ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
 	ES_GetTicketViews(0x00000001000000FEULL, views, numviews);
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
+
+free(mini);
 
 	printf("Waiting for gecko output from mini...\n");
 	while(true)
