@@ -1,0 +1,55 @@
+#!/bin/bash
+
+CURDIR=`pwd`
+
+if [ "$1" = "all" ] ; then
+  echo "compiling armboot ..."
+  echo
+  cd $CURDIR/armboot && make
+  cp $CURDIR/armboot/target/armboot.bin $CURDIR/armboot.bin
+  echo
+  cd $CURDIR && $DEVKITARM/bin/raw2c armboot.bin
+  mv $CURDIR/armboot.c $CURDIR/armboot.h $CURDIR/nswitch/source
+  echo
+  echo "compiling nswitch ..."
+  echo
+  cd $CURDIR/nswitch && make
+  echo
+  echo "copying binaries too project root ($CURDIR) ..."
+  cp $CURDIR/nswitch/boot.dol $CURDIR/boot.dol
+  echo
+  echo "SHA1 checksums: "
+  shasum $CURDIR/armboot.bin
+  shasum $CURDIR/boot.dol
+  echo
+  tar -cvf $CURDIR/compiled.tar $CURDIR/armboot.bin $CURDIR/boot.dol
+  echo
+  echo "binaries have been compressed into $CURDIR/compiled.tar"
+ elif [ "$1" == "nswitch" ] ; then
+  cd $CURDIR && $DEVKITARM/bin/raw2c armboot.bin
+  mv $CURDIR/armboot.c $CURDIR/armboot.h $CURDIR/nswitch/source
+  echo
+  cd $CURDIR/nswitch && make
+  cp $CURDIR/nswitch/boot.dol $CURDIR/boot.dol
+  echo
+  shasum $CURDIR/boot.dol
+ elif [ "$1" == "armboot" ] ; then
+  cd $CURDIR/armboot && make
+  cp $CURDIR/armboot/target/armboot.bin $CURDIR/armboot.bin
+  echo
+  shasum $CURDIR/armboot.bin
+ elif [ "$1" == "clean" ] ; then
+  rm -rf $CURDIR/armboot.* $CURDIR/boot.dol $CURDIR/archive.zip $CURDIR/compiled.tar
+  cd $CURDIR/armboot && make clean
+  cd $CURDIR/nswitch && make clean
+ elif [ "$1" == "" ] ; then
+  echo "build.sh - carver #vwii"
+  echo
+  echo "syntax: ./build { all | armboot | nswitch | clean }"
+  echo "  all     - build both nswitch and armboot source"
+  echo "  armboot - build only armboot source"
+  echo "  nswitch - build only nswitch source"
+  echo "  clean   - cleanup previous build processes"
+  echo
+fi
+
