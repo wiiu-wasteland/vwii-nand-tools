@@ -124,12 +124,14 @@ int main() {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
+   
 	printf("Applying patches to IOS with AHBPROT\n");
 	IOSPATCH_Apply();
 	printf("Initializing ISFS\n");
 	ISFS_Initialize();
-	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
-	printf("\nTrying to load.\nSetting memory.\n");
+	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000007/00000200/content/00000003.app"));
+   
+	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
 	*redirectedGecko = (char)(0);
 	printf("Terminating string.\n");
@@ -137,31 +139,32 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
+ 
+ /*** Boot mini from mem code by giantpune ***/
+  void *mini = memalign(32, armboot_size);  
+  if(!mini) 
+          return 0;    
+  
+  memcpy(mini, armboot, armboot_size);  
+  DCFlushRange(mini, armboot_size);               
+   
+  *(u32*)0xc150f000 = 0x424d454d;  
+  asm volatile("eieio");  
+  
+  *(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
+  asm volatile("eieio");
+
 	tikview views[4] ATTRIBUTE_ALIGN(32);
 	printf("Shutting down IOS subsystems.\n");
 	__IOS_ShutdownSubsystems();
 	printf("Loading IOS 254.\n");
 	__ES_Init();
 	u32 numviews;
-                /*** Boot mini from mem code by giantpune ***/
-                void *mini = memalign(32, armboot_size);  
-                if(!mini) 
-                        return 0;    
-  
-                memcpy(mini, armboot, armboot_size);  
-                DCFlushRange(mini, armboot_size);               
-   
-                *(u32*)0xc150f000 = 0x424d454d;  
-                asm volatile("eieio");  
-  
-                *(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
-                asm volatile("eieio");
-
-	ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
+  ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
 	ES_GetTicketViews(0x00000001000000FEULL, views, numviews);
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
 
-free(mini);
+  free(mini);
 
 	printf("Waiting for gecko output from mini...\n");
 	while(true)
