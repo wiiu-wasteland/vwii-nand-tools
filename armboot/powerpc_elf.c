@@ -85,11 +85,6 @@ u32 virtualToPhysical(u32 virtualAddress)
 	return virtualAddress;
 }
 
-u32 physicalToVirtual(u32 virtualAddress) // I know it needs work
-{
-	return virtualAddress | 0xC0000000;
-}
-
 u32 makeRelativeBranch(u32 currAddr, u32 destAddr, bool linked)
 {
 	u32 ret = 0x48000000 | (( destAddr - currAddr ) & 0x3FFFFFC );
@@ -480,9 +475,10 @@ void memory_watcher_stub_1330100()
 
 //////////////////////////////// END STUBS ////////////////////////
 
-void write_stub(u32 address, u32[] stub, u32 size)
+void write_stub(u32 address, u32 stub[], u32 size)
 {	u32 i;
-	for()
+	for(i = 0; i < size; i++)
+		write32(address + 4 * i, stub[i]);
 }
 
 int powerpc_load_dol(const char *path, u32 *endAddress)
@@ -642,7 +638,6 @@ int powerpc_boot_file(const char *path)
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
-	entry = physicalToVirtual(entry);
 	fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
 	decryptionEndAddress = endAddress & ~3; 
 	gecko_printf("powerpc_load_dol returned %d .\n", fres);

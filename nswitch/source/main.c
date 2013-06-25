@@ -128,7 +128,7 @@ int main() {
    
 	printf("Applying patches to IOS with AHBPROT\n");
 	printf("IOSPATCH_Apply() returned %d", IOSPATCH_Apply());
-	printf("ISFS_Initialize() returned %d", ISFS_Initialize())
+	printf("ISFS_Initialize() returned %d", ISFS_Initialize());
 	printf("Identify_SU() returned %d", Identify_SU());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
