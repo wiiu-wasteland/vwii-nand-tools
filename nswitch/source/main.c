@@ -127,9 +127,9 @@ int main() {
 	initialize(rmode);
    
 	printf("Applying patches to IOS with AHBPROT\n");
-	printf("IOSPATCH_Apply() returned %d", IOSPATCH_Apply());
-	printf("ISFS_Initialize() returned %d", ISFS_Initialize());
-	printf("Identify_SU() returned %d", Identify_SU());
+	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
+	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
+	printf("Identify_SU() returned %d\n", Identify_SU());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
 	printf("\nSetting memory.\n");
