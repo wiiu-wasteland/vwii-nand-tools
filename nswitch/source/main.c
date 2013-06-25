@@ -28,6 +28,7 @@
 
 #include "iospatch.h"
 #include "armboot.h"
+#include "id.h"
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
                 ((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
@@ -126,10 +127,10 @@ int main() {
 	initialize(rmode);
    
 	printf("Applying patches to IOS with AHBPROT\n");
-	IOSPATCH_Apply();
-	printf("Initializing ISFS\n");
-	ISFS_Initialize();
-	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000007/00000200/content/00000003.app"));
+	printf("IOSPATCH_Apply() returned %d", IOSPATCH_Apply());
+	printf("ISFS_Initialize() returned %d", ISFS_Initialize())
+	printf("Identify_SU() returned %d", Identify_SU());
+	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
 	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
