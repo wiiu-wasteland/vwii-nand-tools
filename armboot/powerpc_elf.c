@@ -433,10 +433,10 @@ void powerpc_upload_stub_1800_1_512(void)
 }
 
 
-void powerpc_jump_stub(u32 entry)
+void powerpc_jump_stub(u32 location, u32 entry)
 {
 	u32 i;
-	u32 location = 0x01330100;
+	//u32 location = 0x01330100;
 //	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 
 	// lis r3, entry@h
@@ -479,6 +479,11 @@ void memory_watcher_stub_1330100()
 }
 
 //////////////////////////////// END STUBS ////////////////////////
+
+void write_stub(u32 address, u32[] stub, u32 size)
+{	u32 i;
+	for()
+}
 
 int powerpc_load_dol(const char *path, u32 *endAddress)
 {
@@ -673,7 +678,7 @@ int powerpc_boot_file(const char *path)
 	udelay(300000);
 
 	//this is where the decrypted instructions are that load the "entry point" before RFI
-	u32 oldValue = read32(0x1330384);
+	u32 oldValue = read32(0x133027c);
 
     //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	gecko_printf("Resetting PPC. End on-screen debug output.\n");
@@ -689,15 +694,14 @@ int powerpc_boot_file(const char *path)
 
 	// do race attack here
 	do
-	{	dc_invalidaterange((void*)0x1330380,32);
+	{	dc_invalidaterange((void*)0x8133027c,32);
 		ahb_flush_from(AHB_1);
-	}while(oldValue == read32(0x1330384));
+	}while(oldValue == read32(0x8133027c));
 
 //	powerpc_upload_stub_Ox01330100();	
 //	powerpc_jump_stub(0x1800);
-	write32(0x1330380, 0x3c600000 | entry >> 16 );		//lis     r3,entry@h
-	write32(0x1330384, 0x60630000 | (entry & 0xffff) );//ori     r3,r3,entry@l
-	dc_flushrange((void*)0x1330380,32);
+	powerpc_jump_stub(0x8133027c, entry);
+	dc_flushrange((void*)0x8133027c,32);
 
 // end second flash
 	sensorbarOff();
