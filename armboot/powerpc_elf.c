@@ -679,7 +679,7 @@ int powerpc_boot_file(const char *path)
 	//udelay(300000);
 
 	//not really used now but handy when we start resetting cores
-	//powerpc_upload_stub_100();
+	write_stub(stub_100_location, stub_100, stub_100_size);
 	//should turn the sensor bar on, but no idea if that memory is already accessible.
 	//and maybe it's not were we exppect it to be due to mmu settings
 	//still being disabled
@@ -720,7 +720,7 @@ int powerpc_boot_file(const char *path)
 		ahb_flush_from(AHB_1);
 	}while(oldValue == read32(0x133013C));
 
-//	powerpc_upload_stub_Ox01330100();	
+	write_stub(stub_Ox01330100_location, stub_Ox01330100, stub_Ox01330100_size);	
 //	powerpc_jump_stub(0x1800);
 //	powerpc_jump_stub(0x8133027c, entry);
 	dc_flushrange((void*)0x1330100,64);
