@@ -82,7 +82,7 @@ u32 IOSPATCH_AHBPROT() {
 	{
 		printf("IOSPATCH_AHBPROT() requires AHBPROT access!\nPlease run it from HBC and correct any meta.xml file used.\n");
 	}
-  else {
+	else {
 		write32(MEM_PROT, read32(MEM_PROT) & 0x0000FFFF);
 		//return apply_patch("set_ahbprot", check_tmd_old, sizeof(check_tmd_old), check_tmd_patch, sizeof(check_tmd_patch), 6);
 		return apply_patch("es_set_ahbprot", es_set_ahbprot_old, sizeof(es_set_ahbprot_old), es_set_ahbprot_patch, sizeof(es_set_ahbprot_patch), 25);
@@ -96,8 +96,8 @@ u32 IOSPATCH_Apply() {
 	if ((read32(0xCD800038) | read32(0xCD80003C))==0)
 	{
 		printf("IOSPATCH_Apply() requires AHBPROT access!\nPlease run it from HBC and check any meta.xml file used.\n");
-  }
-  else {
+	}
+	else {
 		disable_memory_protection();
 		count += apply_patch("di_readlimit", di_readlimit_old, sizeof(di_readlimit_old), di_readlimit_patch, sizeof(di_readlimit_patch), 12);
 		count += apply_patch("isfs_permissions", isfs_permissions_old, sizeof(isfs_permissions_old), isfs_permissions_patch, sizeof(isfs_permissions_patch), 0);

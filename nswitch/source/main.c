@@ -31,7 +31,7 @@
 #include "id.h"
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
-                ((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
+				((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
 
 typedef struct dol_t dol_t;
 struct dol_t
@@ -125,10 +125,10 @@ int main() {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-   
 	printf("Applying patches to IOS with AHBPROT\n");
 	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
 	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
+	printf("__ES_Init() returned %d\n", __ES_Init());
 	printf("Identify_SU() returned %d\n", Identify_SU());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
@@ -141,19 +141,19 @@ int main() {
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
  
- /*** Boot mini from mem code by giantpune ***/
-  void *mini = memalign(32, armboot_size);  
-  if(!mini) 
-          return 0;    
-  
-  memcpy(mini, armboot, armboot_size);  
-  DCFlushRange(mini, armboot_size);               
-   
-  *(u32*)0xc150f000 = 0x424d454d;  
-  asm volatile("eieio");  
-  
-  *(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
-  asm volatile("eieio");
+	/*** Boot mini from mem code by giantpune ***/
+	void *mini = memalign(32, armboot_size);  
+	if(!mini) 
+		  return 0;    
+
+	memcpy(mini, armboot, armboot_size);  
+	DCFlushRange(mini, armboot_size);               
+
+	*(u32*)0xc150f000 = 0x424d454d;  
+	asm volatile("eieio");  
+
+	*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
+	asm volatile("eieio");
 
 	tikview views[4] ATTRIBUTE_ALIGN(32);
 	printf("Shutting down IOS subsystems.\n");
@@ -161,7 +161,7 @@ int main() {
 	printf("Loading IOS 254.\n");
 	__ES_Init();
 	u32 numviews;
-  ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
+	ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
 	ES_GetTicketViews(0x00000001000000FEULL, views, numviews);
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
 
