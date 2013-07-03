@@ -8,3 +8,10 @@ git_version.h
 .*.swp
 *.ld
 *.bak
+armboot/stub.h
+armboot/stub.c
+armboot/stubsb1.h
+armboot/stubsb1.h
+nswitch/source/armboot.h
+nswitch/source/armboot.c
+
