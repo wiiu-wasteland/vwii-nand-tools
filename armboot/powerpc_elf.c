@@ -20,6 +20,7 @@ Copyright (C) 2009                      Andre Heider "dhewg" <dhewg@wiibrew.org>
 #include "elf.h"
 #include "memory.h"
 #include "string.h"
+#include "stubsb1.h"
 
 //obcd
 //missing
@@ -492,6 +493,21 @@ void write_stub(u32 address, u32 stub[], u32 size)
 		write32(address + 4 * i, stub[i]);
 }
 
+void powerpc_upload_array (const unsigned char* which, u32 where, const int len)
+{
+	const unsigned char* source;
+	u32 pos=0;
+	u32 opcode;
+
+	source = which;
+	while (pos < (u32)(len))
+	{
+		opcode = ((*(source+pos))<<24) + ((*(source+pos+1))<<16) + ((*(source+pos+2))<<8) + *(source+pos+3);
+		write32(where + pos,opcode);
+		pos+=4;
+	}
+}
+
 int powerpc_load_dol(const char *path, u32 *endAddress)
 {
 	u32 read;
@@ -648,7 +664,7 @@ int powerpc_boot_file(const char *path)
 	udelay(300000);
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
-	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
+//	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
 	fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
 	decryptionEndAddress = endAddress & ~3; 
 	gecko_printf("powerpc_load_dol returned %d .\n", fres);
@@ -672,7 +688,7 @@ int powerpc_boot_file(const char *path)
 	//right now, we just check if our stubs really stay in place.
 	//learning to walk first.
 	//powerpc_upload_stub_1800_2();
-	
+	powerpc_upload_array(stubsb1,0x1800,stubsb1_size);
 	//write32(0x1800, 0xAAAAAAAA);
 
 	//sensorbarOff();
@@ -680,13 +696,13 @@ int powerpc_boot_file(const char *path)
 	dc_flushall();
 	
 // start second flash
-	sensorbarOn();
-	udelay(300000);
+//	sensorbarOn();
+//	udelay(300000);
 
 	//this is where the decrypted instructions are that load the "entry point" before RFI
-	u32 oldValue = read32(0x133027c);
+	u32 oldValue = read32(0x133013C);
 
-    //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
+    set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	gecko_printf("Resetting PPC. End on-screen debug output.\n");
 	gecko_enable(0);
 //   set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
@@ -700,24 +716,25 @@ int powerpc_boot_file(const char *path)
 
 	// do race attack here
 	do
-	{	dc_invalidaterange((void*)0x8133027c,32);
+	{	dc_invalidaterange((void*)0x1330100,64);
 		ahb_flush_from(AHB_1);
-	}while(oldValue == read32(0x8133027c));
+	}while(oldValue == read32(0x133013C));
 
 //	powerpc_upload_stub_Ox01330100();	
 //	powerpc_jump_stub(0x1800);
-	powerpc_jump_stub(0x8133027c, entry);
-	dc_flushrange((void*)0x8133027c,32);
+//	powerpc_jump_stub(0x8133027c, entry);
+	dc_flushrange((void*)0x1330100,64);
 
 // end second flash
-	sensorbarOff();
+//	sensorbarOff();
 
 	// make sure decryption / validation didn't finish yet
+/*	
 	dc_invalidaterange((void*)decryptionEndAddress,32);
 	ahb_flush_from(AHB_1);
 	if(oldValue2 != read32(decryptionEndAddress))
 		binaryPanic(0);
-	
+*/
 	// make sure our change actually took place (assume nothing)
 	//if(oldValue == read32(0x1330100))
 	//	binaryPanic(0x55555555);
@@ -729,8 +746,8 @@ int powerpc_boot_file(const char *path)
 	}while(oldValue2 == read32(decryptionEndAddress));
 
 	udelay(300000);
-	sensorbarOn();
-/*	light on and stay on ... until reset
+//	sensorbarOn();
+
 	//dump decrypted memory area
 	u32 writeLength;
 	fres = f_open(&fd, "/bootmii/dump2.bin", FA_CREATE_ALWAYS|FA_WRITE);
@@ -755,6 +772,12 @@ int powerpc_boot_file(const char *path)
 //	udelay(300000);
 //	sensorbarOff();
 
+
+
+
+
+
+
 	fres = f_close(&fd);
 	if (fres != FR_OK)
 		binaryPanic(fres);
@@ -772,25 +795,18 @@ int powerpc_boot_file(const char *path)
 	if (fres != FR_OK)
 		binaryPanic(fres);
 
-
-
-
-
 // check 0x1800 code
 
 	fres = f_open(&fd, "/bootmii/dmp1800.bin", FA_CREATE_ALWAYS|FA_WRITE);
 	if (fres != FR_OK)
 		binaryPanic(fres);	
 
-	fres = f_write(&fd, (void*)0x1800,(u32)(0x14) ,&writeLength);
+	fres = f_write(&fd, (void*)0x1800,(u32)(stubsb1_size) ,&writeLength);
 	if (fres != FR_OK)
 		binaryPanic(fres);
 	fres = f_close(&fd);
 	if (fres != FR_OK)
 		binaryPanic(fres);
-*/
-
-
 
 
 

@@ -15,6 +15,7 @@ LDSCRIPT = mini.ld
 LIBS = -lgcc
 
 ELFLOADER = target/elfloader.bin
+STUB = stub/stub.bin
 MAKEBIN = $(CURDIR)/makebin.py
 
 TARGET = target/armboot-sym.elf
@@ -23,11 +24,17 @@ TARGET_BIN = target/armboot.bin
 OBJS = start.o main.o ipc.o vsprintf.o string.o gecko.o memory.o memory_asm.o \
 	utils_asm.o utils.o ff.o diskio.o sdhc.o powerpc_elf.o powerpc.o panic.o \
 	irq.o irq_asm.o exception.o exception_asm.o seeprom.o crypto.o nand.o \
-	boot2.o ldhack.o sdmmc.o
+	boot2.o ldhack.o sdmmc.o stub.o	stubsb1.o
 
 include common.mk
 
-all: $(TARGET_BIN)
+
+#all: $(TARGET_BIN)
+
+all:
+	@$(MAKE) -C stub
+	@$(MAKE) -C stubsb1
+	@$(MAKE) $(TARGET_BIN)
 
 main.o: main.c
 
@@ -38,6 +45,7 @@ $(TARGET_STRIPPED): $(TARGET)
 $(TARGET_BIN): $(TARGET_STRIPPED) $(ELFLOADER)
 	@echo  "MAKEBIN	$@"
 	@$(MAKEBIN) $(ELFLOADER) $< $@
+	@$(MAKE) -C elfloader
 
 upload: $(TARGET_BIN)
 	@$(WIIDEV)/bin/bootmii -a $<
@@ -47,7 +55,12 @@ clean: myclean
 $(ELFLOADER):
 	@$(MAKE) -C elfloader
 
+#$(STUB):
+#	@echo  "make stub"
+#	@$(MAKE) -C stub
+
 myclean:
 	-rm -f $(TARGET) $(TARGET_STRIPPED) $(TARGET_BIN)
 	@$(MAKE) -C elfloader clean
-
+	@$(MAKE) -C stub clean
+	@$(MAKE) -C stubsb1 clean
