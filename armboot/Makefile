@@ -45,7 +45,6 @@ $(TARGET_STRIPPED): $(TARGET)
 $(TARGET_BIN): $(TARGET_STRIPPED) $(ELFLOADER)
 	@echo  "MAKEBIN	$@"
 	@$(MAKEBIN) $(ELFLOADER) $< $@
-	@$(MAKE) -C elfloader
 
 upload: $(TARGET_BIN)
 	@$(WIIDEV)/bin/bootmii -a $<
