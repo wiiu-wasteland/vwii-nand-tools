@@ -6,12 +6,10 @@ git_version.h
 *~
 *.o
 .*.swp
-*.ld
 *.bak
 armboot/stub.h
 armboot/stub.c
 armboot/stubsb1.h
-armboot/stubsb1.h
+armboot/stubsb1.c
 nswitch/source/armboot.h
 nswitch/source/armboot.c
-

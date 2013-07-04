@@ -209,8 +209,6 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 
 void gecko_init(void)
 {	gecko_enabled = read16(0x01200002) == 0XDEB6;
-  if(FR_OK == f_open(&logFile, "/bootmii/log.txt", FA_CREATE_ALWAYS|FA_WRITE))
-	gecko_enable |= 2;
 	write32(EXI0_CSR, 0);
 	write32(EXI1_CSR, 0);
 	write32(EXI2_CSR, 0);
@@ -225,9 +223,11 @@ void gecko_init(void)
 }
 
 u8 gecko_enable(const u8 enable)
-{	if(enable)
-		return gecko_enabled |= 1;
-	return gecko_enabled &= ~1;
+{	if(gecko_enabled && !enable)
+	{	f_open(&logFile, "/bootmii/log.txt", FA_CREATE_ALWAYS|FA_WRITE);
+		return gecko_enabled = 2;
+	}
+	return gecko_enabled = enable;
 }
 
 u8 gecko_enable_console(const u8 enable)
@@ -248,30 +248,25 @@ int gecko_printf(const char *fmt, ...)
 		return 0;
 	va_list args;
 	char buffer[256];
-	int i, c;
+	int i;
 
 	va_start(args, fmt);
 	i = vsprintf(buffer, fmt, args);
 	va_end(args);
 	fmt = buffer;
-	if(gecko_enabled & 1)
+	if(gecko_enabled == 5)
 		while(*fmt)
-		{	dc_invalidaterange((void*)0x01200000,256);
-			for(c = 0x01200000; c<0x01200099; c++)
-				if(!read8(c))
-					break;
-			if(c >= 0x01200099)
-				break;
-			write8(c+1, 0);
-			write8(c, *fmt);
-			dc_flushrange((void*)0x01200000,256);
+		{	write8(0x01200000, *fmt);
+			dc_flushrange((void*)0x01200000,32);
+			do
+				dc_invalidaterange((void*)0x01200000,32);
+			while(read8(0x01200000));
 			fmt++;
 		}
-	if(gecko_enabled & 2)
+	else if(gecko_enabled == 2)
 	{	f_puts(fmt, &logFile);
 		f_sync(&logFile);
 	}
-	udelay(20000); // wait for PPC's vsync
 	return 0;
 #ifdef GECKO_SAFE
 	return gecko_sendbuffer_safe(buffer, i);
