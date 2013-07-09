@@ -210,7 +210,7 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 void gecko_init(void)
 {	gecko_enabled = (read16(0x01200002) == 0XDEB6);
 	if(f_open(&logFile, "/bootmii/log.txt", FA_CREATE_ALWAYS|FA_WRITE) == FR_OK)
-		gecko_enable |= 2;
+		gecko_enabled |= 2;
 	write32(EXI0_CSR, 0);
 	write32(EXI1_CSR, 0);
 	write32(EXI2_CSR, 0);
