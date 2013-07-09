@@ -42,7 +42,7 @@ distribution.
 
 
 /* Reads a file from ISFS to an array in memory */
-/*
+
 s32 ISFS_ReadFileToArray (char *filepath, u8 *filearray, u32 max_size, u32 *file_size) {
 	s32 ret, fd;
 	static fstats filestats ATTRIBUTE_ALIGN(32);
@@ -85,7 +85,7 @@ s32 ISFS_ReadFileToArray (char *filepath, u8 *filearray, u32 max_size, u32 *file
 	}
 	return 0;
 }
-*/
+
 s32 Identify(const u8 *certs, u32 certs_size, const u8 *idtmd, u32 idtmd_size, const u8 *idticket, u32 idticket_size) {
 	s32 ret;
 	u32 keyid = 0;
@@ -123,7 +123,7 @@ s32 Identify_SU(void)
 {
 	return Identify(certs_dat, certs_dat_size, fake_su_tmd_dat, fake_su_tmd_dat_size, fake_su_ticket_dat, fake_su_ticket_dat_size);
 }
-/*
+
 s32 Identify_SysMenu(void)
 {
 	s32 ret;
@@ -149,4 +149,4 @@ s32 Identify_SysMenu(void)
 	fflush(stdout);
 	return Identify(certs_dat, certs_dat_size, sysmenu_tmd, sysmenu_tmd_size, sysmenu_ticket, sysmenu_ticket_size);
 }
-*/
+

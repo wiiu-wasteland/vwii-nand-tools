@@ -129,7 +129,7 @@ int main() {
 	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
 	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 	printf("__ES_Init() returned %d\n", __ES_Init());
-	printf("Identify_SU() returned %d\n", Identify_SU());
+	printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
 	printf("\nSetting memory.\n");
@@ -168,12 +168,12 @@ int main() {
   free(mini);
 */
 
-// ** boot mini without BootMii IOS code by Crediar ** //
+	// ** boot mini without BootMii IOS code by Crediar ** //
 
-unsigned char ES_ImportBoot2[16] =
-{
-    0x68, 0x4B, 0x2B, 0x06, 0xD1, 0x0C, 0x68, 0x8B, 0x2B, 0x00, 0xD1, 0x09, 0x68, 0xC8, 0x68, 0x42
-};
+	unsigned char ES_ImportBoot2[16] =
+	{
+		0x68, 0x4B, 0x2B, 0x06, 0xD1, 0x0C, 0x68, 0x8B, 0x2B, 0x00, 0xD1, 0x09, 0x68, 0xC8, 0x68, 0x42
+	};
 
 	u32 i;
 	for( i = 0x939F0000; i < 0x939FE000; i+=2 )
@@ -189,20 +189,20 @@ unsigned char ES_ImportBoot2[16] =
 			*(vu32*)(i+0x10)	= 0x10100000;	// offset
 			*(vu32*)(i+0x14)	= 0x0025161F;	// version
 
-  		DCFlushRange( (void*)i, 0x20 );
+			DCFlushRange( (void*)i, 0x20 );
 
- ﻿	void *mini = (void*)0x90100000;
-     memcpy(mini, armboot, armboot_size);
-				DCFlushRange( mini, armboot_size );
-				
-				s32 fd = IOS_Open( "/dev/es", 0 );
-				
-				u8 *buffer = (u8*)memalign( 32, 0x100 );
-				memset( buffer, 0, 0x100 );
-				
-				i = IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL );
+			void *mini = (void*)0x90100000;
+			memcpy(mini, armboot, armboot_size);
+			DCFlushRange( mini, armboot_size );
+			
+			// s32 fd = IOS_Open( "/dev/es", 0 );
+			
+			u8 *buffer = (u8*)memalign( 32, 0x100 );
+			memset( buffer, 0, 0x100 );
+			
+			i = IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL );
 
-				printf("ES_ImportBoot():%d\n", i );
+			printf("ES_ImportBoot():%d\n", i );
 		}
 	}
    

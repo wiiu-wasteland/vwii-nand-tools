@@ -33,6 +33,6 @@ distribution.
 s32 Identify_SU(void);
 
 // Identify as the system menu
-//s32 Identify_SysMenu(void);
+s32 Identify_SysMenu(void);
 
 #endif
