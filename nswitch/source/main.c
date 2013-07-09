@@ -128,7 +128,7 @@ int main() {
 	printf("Applying patches to IOS with AHBPROT\n");
 	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
 	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
-	printf("__ES_Init() returned %d\n", __ES_Init());
+	//printf("__ES_Init() returned %d\n", __ES_Init());
 	printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
@@ -195,7 +195,7 @@ int main() {
 			memcpy(mini, armboot, armboot_size);
 			DCFlushRange( mini, armboot_size );
 			
-			// s32 fd = IOS_Open( "/dev/es", 0 );
+			s32 fd = IOS_Open( "/dev/es", 0 );
 			
 			u8 *buffer = (u8*)memalign( 32, 0x100 );
 			memset( buffer, 0, 0x100 );
