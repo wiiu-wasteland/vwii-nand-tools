@@ -140,8 +140,8 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
- 
-	/*** Boot mini from mem code by giantpune ***/
+/* 
+	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
 		  return 0;    
@@ -166,7 +166,46 @@ int main() {
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
 
   free(mini);
+*/
 
+// ** boot mini without BootMii IOS code by Crediar ** //
+
+unsigned char ES_ImportBoot2[16] =
+{
+    0x68, 0x4B, 0x2B, 0x06, 0xD1, 0x0C, 0x68, 0x8B, 0x2B, 0x00, 0xD1, 0x09, 0x68, 0xC8, 0x68, 0x42
+};
+
+	u32 i;
+	for( i = 0x939F0000; i < 0x939FE000; i+=2 )
+	{
+		if( memcmp( (void*)(i), ES_ImportBoot2, sizeof(ES_ImportBoot2) ) == 0 )
+		{
+			DCInvalidateRange( (void*)i, 0x20 );
+			
+			*(vu32*)(i+0x00)	= 0x48034904;	// LDR R0, 0x10, LDR R1, 0x14
+			*(vu32*)(i+0x04)	= 0x477846C0;	// BX PC, NOP
+			*(vu32*)(i+0x08)	= 0xE6000870;	// SYSCALL
+			*(vu32*)(i+0x0C)	= 0xE12FFF1E;	// BLR
+			*(vu32*)(i+0x10)	= 0x10100000;	// offset
+			*(vu32*)(i+0x14)	= 0x0025161F;	// version
+
+  		DCFlushRange( (void*)i, 0x20 );
+
+ ﻿	void *mini = (void*)0x90100000;
+     memcpy(mini, armboot, armboot_size);
+				DCFlushRange( mini, armboot_size );
+				
+				s32 fd = IOS_Open( "/dev/es", 0 );
+				
+				u8 *buffer = (u8*)memalign( 32, 0x100 );
+				memset( buffer, 0, 0x100 );
+				
+				i = IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL );
+
+				printf("ES_ImportBoot():%d\n", i );
+		}
+	}
+   
 	printf("Waiting for gecko output from mini...\n");
 	while(true)
 	{ do DCInvalidateRange(redirectedGecko, 32);
