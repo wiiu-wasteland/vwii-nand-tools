@@ -266,7 +266,7 @@ int gecko_printf(const char *fmt, ...)
 			write8(c, *fmt);
 			dc_flushrange((void*)0x01200000,256);
 			fmt++;
-		}
+		}fmt = buffer;
 	if(gecko_enabled & 2)
 	{	f_puts(fmt, &logFile);
 		f_sync(&logFile);
