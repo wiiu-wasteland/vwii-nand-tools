@@ -42,7 +42,7 @@ static u32 apply_patch(char *name, const u8 *old, u32 old_size, const u8 *patch,
 			ICInvalidateRange((u8 *)(((u32)start) >> 5 << 5), (patch_size >> 5 << 5) + 64);
 		}
 		ptr_start++;
-	}
+	}printf("%s patch applied %d times.", name, found);
 	return found;
 }
 
