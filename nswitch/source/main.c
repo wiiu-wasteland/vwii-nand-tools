@@ -155,10 +155,10 @@ int main() {
 	*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
 	asm volatile("eieio");
 
-	tikview views[4] ATTRIBUTE_ALIGN(32);
+	tikview views[4] ATTRIBUTE_ALIGN(32);*/
 	printf("Shutting down IOS subsystems.\n");
 	__IOS_ShutdownSubsystems();
-	printf("Loading IOS 254.\n");
+/*	printf("Loading IOS 254.\n");
 	__ES_Init();
 	u32 numviews;
 	ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
