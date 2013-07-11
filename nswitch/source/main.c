@@ -200,9 +200,7 @@ int main() {
 			u8 *buffer = (u8*)memalign( 32, 0x100 );
 			memset( buffer, 0, 0x100 );
 			
-			i = IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL );
-
-			printf("ES_ImportBoot():%d\n", i );
+			printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 		}
 	}
    
