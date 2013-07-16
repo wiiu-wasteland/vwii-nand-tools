@@ -139,7 +139,7 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);*/
-/* 
+ 
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
@@ -154,10 +154,10 @@ int main() {
 	*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
 	asm volatile("eieio");
 
-	tikview views[4] ATTRIBUTE_ALIGN(32);*/
+	tikview views[4] ATTRIBUTE_ALIGN(32);
 	printf("Shutting down IOS subsystems.\n");
 	__IOS_ShutdownSubsystems();
-/*	printf("Loading IOS 254.\n");
+	printf("Loading IOS 254.\n");
 	__ES_Init();
 	u32 numviews;
 	ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
@@ -165,8 +165,8 @@ int main() {
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
 
   free(mini);
-*/
 
+/*
 	// ** boot mini without BootMii IOS code by Crediar ** //
 
 	unsigned char ES_ImportBoot2[16] =
@@ -202,7 +202,7 @@ int main() {
 			printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 		}
 	}
-   
+*/   
 	printf("Waiting for mini to reset PPC\n");
 	while(true);
 /*	{ do DCInvalidateRange(redirectedGecko, 32);
