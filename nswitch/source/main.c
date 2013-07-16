@@ -131,14 +131,14 @@ int main() {
 	//printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
-/*	printf("\nSetting memory.\n");
+	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
 	*redirectedGecko = (char)(0);
 	printf("Terminating string.\n");
 	*(redirectedGecko+1) = (char)(0);
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
-	DCFlushRange(redirectedGecko, 32);*/
+	DCFlushRange(redirectedGecko, 32);
  
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
@@ -203,15 +203,15 @@ int main() {
 		}
 	}
 */   
-	printf("Waiting for mini to reset PPC\n");
-	while(true);
-/*	{ do DCInvalidateRange(redirectedGecko, 32);
+	printf("Waiting for mini gecko output.\n");
+	while(true)
+	{ do DCInvalidateRange(redirectedGecko, 32);
 	  while(!*redirectedGecko);
-	  VIDEO_WaitVSync();
+	  //VIDEO_WaitVSync();
 	  printf(redirectedGecko);
 	  *redirectedGecko = (char)(0);
 	  DCFlushRange(redirectedGecko, 32);
 	}
-*/
+
 	return 0;
 }
