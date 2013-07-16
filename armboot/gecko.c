@@ -273,6 +273,7 @@ int gecko_printf(const char *fmt, ...)
 					dc_invalidaterange((void*)0x01200000,32);
 					if(read8(0x01200000))
 					{	gecko_enable(0);
+						write8(0x01200000, "X");
 						break;
 					}
 				}

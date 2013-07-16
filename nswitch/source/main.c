@@ -28,7 +28,6 @@
 
 #include "iospatch.h"
 #include "armboot.h"
-#include "id.h"
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
 				((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
@@ -132,14 +131,14 @@ int main() {
 	//printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
 	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
-	printf("\nSetting memory.\n");
+/*	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
 	*redirectedGecko = (char)(0);
 	printf("Terminating string.\n");
 	*(redirectedGecko+1) = (char)(0);
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
-	DCFlushRange(redirectedGecko, 32);
+	DCFlushRange(redirectedGecko, 32);*/
 /* 
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
@@ -204,8 +203,8 @@ int main() {
 		}
 	}
    
-	printf("Waiting for gecko output from mini...\n");
-	while(true)
+	printf("Waiting for mini to reset PPC\n");
+	while(true);
 	{ do DCInvalidateRange(redirectedGecko, 32);
 	  while(!*redirectedGecko);
 	  VIDEO_WaitVSync();
