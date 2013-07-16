@@ -205,13 +205,13 @@ int main() {
    
 	printf("Waiting for mini to reset PPC\n");
 	while(true);
-	{ do DCInvalidateRange(redirectedGecko, 32);
+/*	{ do DCInvalidateRange(redirectedGecko, 32);
 	  while(!*redirectedGecko);
 	  VIDEO_WaitVSync();
 	  printf(redirectedGecko);
 	  *redirectedGecko = (char)(0);
 	  DCFlushRange(redirectedGecko, 32);
 	}
-
+*/
 	return 0;
 }
