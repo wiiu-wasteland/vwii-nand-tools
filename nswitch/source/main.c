@@ -49,10 +49,10 @@ struct dol_t
 
 int loadDOLfromNAND(const char *path)
 {
-	int fd;
+	int fd ATTRIBUTE_ALIGN(32);
 	s32 fres;
-	fstats *status;
-	dol_t dol_hdr;
+	fstats *status ATTRIBUTE_ALIGN(32);
+	dol_t dol_hdr ATTRIBUTE_ALIGN(32);
 	
 	printf("Loading DOL file: %s .\n", path);
 	fd = ISFS_Open(path, ISFS_OPEN_READ);
