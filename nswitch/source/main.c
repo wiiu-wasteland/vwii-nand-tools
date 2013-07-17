@@ -124,12 +124,12 @@ int main() {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-	printf("Applying patches to IOS with AHBPROT\n");
+	//printf("Applying patches to IOS with AHBPROT\n");
 	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
-	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
+	//printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 	//printf("__ES_Init() returned %d\n", __ES_Init());
 	//printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
-	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
+	//printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
    
 	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
@@ -139,7 +139,7 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
- 
+/* 
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
@@ -166,7 +166,7 @@ int main() {
 
   free(mini);
 
-/*
+*/
 	// ** boot mini without BootMii IOS code by Crediar ** //
 
 	unsigned char ES_ImportBoot2[16] =
@@ -202,7 +202,7 @@ int main() {
 			printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 		}
 	}
-*/   
+   
 	printf("Waiting for mini gecko output.\n");
 	while(true)
 	{ do DCInvalidateRange(redirectedGecko, 32);
