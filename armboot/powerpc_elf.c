@@ -665,9 +665,9 @@ int powerpc_boot_file(const char *path)
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
-	fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
-	decryptionEndAddress = endAddress & ~3; 
-	gecko_printf("powerpc_load_dol returned %d .\n", fres);
+	//fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
+	//decryptionEndAddress = endAddress & ~3; 
+	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 
 	sensorbarOff();
 	udelay(300000);
@@ -721,7 +721,7 @@ int powerpc_boot_file(const char *path)
 // end second flash
 	sensorbarOff();
 
-	// make sure decryption / validation didn't finish yet
+/*	// make sure decryption / validation didn't finish yet
 	
 	dc_invalidaterange((void*)decryptionEndAddress,32);
 	ahb_flush_from(AHB_1);
