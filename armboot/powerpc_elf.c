@@ -719,7 +719,7 @@ int powerpc_boot_file(const char *path)
 //	write_stub(stub_Ox01330100_location, stub_Ox01330100, stub_Ox01330100_size);	
 //	powerpc_jump_stub(0x1800);
 	powerpc_jump_stub(0x133027c, entry);
-	dc_flushrange((void*)0x133027c,320);
+	dc_flushrange((void*)0x1330168,320);
 
 // end second flash
 	sensorbarOff();
