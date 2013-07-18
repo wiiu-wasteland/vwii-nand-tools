@@ -139,7 +139,7 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
- 
+/* 
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
@@ -166,7 +166,7 @@ int main() {
 
   free(mini);
 
-/*
+*/
 	// ** boot mini without BootMii IOS code by Crediar ** //
 
 	unsigned char ES_ImportBoot2[16] =
@@ -199,10 +199,12 @@ int main() {
 			u8 *buffer = (u8*)memalign( 32, 0x100 );
 			memset( buffer, 0, 0x100 );
 			
+ printf("Shutting down IOS subsystems.\n");
+ __IOS_ShutdownSubsystems();
 			printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 		}
 	}
-*/ 
+ 
 	printf("Waiting for mini gecko output.\n");
 	while(true)
 	{ do DCInvalidateRange(redirectedGecko, 32);
