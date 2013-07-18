@@ -713,10 +713,13 @@ int powerpc_boot_file(const char *path)
 		ahb_flush_from(AHB_1);
 	}while(oldValue == read32(0x133027c));
 
+	//hopefully keep other 2 cores available
+	write32(0x1330168, 0x60000000); // nop
+	write32(0x1330188, 0x60000000); // nop
 //	write_stub(stub_Ox01330100_location, stub_Ox01330100, stub_Ox01330100_size);	
 //	powerpc_jump_stub(0x1800);
 	powerpc_jump_stub(0x133027c, entry);
-	dc_flushrange((void*)0x133027c,32);
+	dc_flushrange((void*)0x133027c,320);
 
 // end second flash
 	sensorbarOff();
