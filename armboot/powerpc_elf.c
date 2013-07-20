@@ -673,7 +673,7 @@ int powerpc_boot_file(const char *path)
 /* end first flash */
 
 	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
-	{	powerpc_upload_stub(elfhdr.e_entry);
+	{	powerpc_upload_oldstub(elfhdr.e_entry);
 		powerpc_reset();
 		gecko_printf("PPC booted!\n");
 
