@@ -481,7 +481,7 @@ const u32 memory_watcher_stub[] =
 	/*0x1330108*/, 0x90830014 // stw r4,(0x0014)r3
  	/*0x133010C*/, 0x7c0004ac // sync
 	/*0x1330110*/, 0x48000000 // infinite loop
-	
+	/*0x1330114*/, 0x00000000
 	/*0x1330118*/, 0xAAAAAAAA // flag location
 };
 
@@ -561,9 +561,10 @@ int powerpc_load_dol(const char *path, u32 *endAddress)
 		gecko_printf("Data section of size %08x loaded from offset %08x to memory %08x.\n", dol_hdr.sizeData[ii], dol_hdr.offsetData[ii], phys);
 		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32(phys+(dol_hdr.sizeData[ii] - 1) & ~3),phys+(dol_hdr.sizeData[ii] - 1) & ~3);
 	}
-	if (endAddress)
-		*endAddress = end - 1;
-	gecko_printf("endAddress = %08x\n", *endAddress);
+//	if (endAddress)
+//		*endAddress = end - 1;
+//	gecko_printf("endAddress = %08x\n", *endAddress);
+	*entry = dol_hdr.entrypt;
 	return 0;
 }
 
@@ -646,8 +647,6 @@ int powerpc_load_elf(char* path, u32* entry)
 	dc_flushall();
 
 	gecko_printf("ELF load done. Entry point: %08x\n", elfhdr.e_entry);
-	dc_flushrange((void*)0x160,32);
-	//gecko_printf("PPC booted!\n");
 	*entry = elfhdr.e_entry;
 	return 0;
 }
@@ -672,6 +671,15 @@ int powerpc_boot_file(const char *path)
 	sensorbarOff();
 	udelay(300000);
 /* end first flash */
+
+	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
+	{	powerpc_upload_stub(elfhdr.e_entry);
+		powerpc_reset();
+		gecko_printf("PPC booted!\n");
+
+		return 0;
+	}
+
 	u32 oldValue2 = read32(decryptionEndAddress);
 
 	//should turn the sensor bar on, but no idea if that memory is already accessible.
@@ -882,7 +890,7 @@ int powerpc_boot_mem(const u8 *addr, u32 len)
 	dc_flushall();
 
 	gecko_printf("ELF load done, booting PPC...\n");
-	//powerpc_upload_stub(0x104, ehdr->e_entry);
+	//powerpc_upload_oldstub(ehdr->e_entry);
 	powerpc_reset();
 	gecko_printf("PPC booted!\n");
 
