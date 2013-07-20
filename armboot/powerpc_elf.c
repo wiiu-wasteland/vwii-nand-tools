@@ -508,7 +508,7 @@ void powerpc_upload_array (const unsigned char* which, u32 where, const int len)
 	}
 }
 
-int powerpc_load_dol(const char *path, u32 *endAddress)
+int powerpc_load_dol(const char *path, u32 *entry)
 {
 	u32 read;
 	FIL fd;
