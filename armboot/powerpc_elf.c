@@ -727,12 +727,12 @@ int powerpc_boot_file(const char *path)
 	//hopefully keep other 2 cores available
 	write32(0x133010c, 0x480000f4); // unconditional branch
 	write32(0x1330208, 0x60000000); // nop
-	write32(0x1330214, 0x60000000); // nop
+	write32(0x133022c, 0x60000000); // nop
 	write32(0x1330220, 0x60000000); // nop
 //	write_stub(stub_Ox01330100_location, stub_Ox01330100, stub_Ox01330100_size);	
 //	powerpc_jump_stub(0x1800);
 	powerpc_jump_stub(0x133027c, entry);
-	dc_flushrange((void*)0x1330100,0x194);
+	dc_flushrange((void*)0x1330100,0x200 /*0x194 needed*/);
 
 // end second flash
 	sensorbarOff();
