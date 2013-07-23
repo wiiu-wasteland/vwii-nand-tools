@@ -673,7 +673,10 @@ int powerpc_boot_file(const char *path)
 /* end first flash */
 
 	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
-	{	powerpc_upload_oldstub(elfhdr.e_entry);
+	{	flashSensor(200000,200000,200000);
+		flashSensor(200000,200000,200000);
+		flashSensor(200000,200000,200000);
+		powerpc_upload_oldstub(elfhdr.e_entry);
 		powerpc_reset();
 		gecko_printf("PPC booted!\n");
 
@@ -705,7 +708,7 @@ int powerpc_boot_file(const char *path)
     //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
 	set32(HW_AHBPROT, 0xFFFFFFFF);
-	gecko_printf("Resetting PPC. End on-screen debug output.\n");
+	gecko_printf("Resetting PPC. End on-screen debug output.\n\n");
 	gecko_enable(0);
 
 	//reboot ppc side
