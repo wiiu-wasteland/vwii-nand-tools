@@ -20,6 +20,11 @@ BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data  
 INCLUDES	:=
+#RAW2C		:= c:/devkitpro/devkitppc/bin/raw2c
+RAW2C		:= $(DEVKITARM)/bin/raw2c
+ARMBOOT		:= ./../armboot
+ARMBOOT-BIN	:= $(ARMBOOT)/target/armboot.bin
+ARMBOOT-DEPS:= $(ARMBOOT)/* $(ARMBOOT)/stub/* $(ARMBOOT)/stubsb1/* $(ARMBOOT)/elfloader/*
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -121,27 +126,6 @@ DEPENDS	:=	$(OFILES:.o=.d)
 $(OUTPUT).dol: $(OUTPUT).elf
 $(OUTPUT).elf: $(OFILES)
 
-#---------------------------------------------------------------------------------
-# This rule links in binary data with the .jpg extension
-#---------------------------------------------------------------------------------
-%.bin.o	:	%.bin
-%.dat.o	:	%.dat
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	$(bin2o)
-
--include $(DEPENDS)
-
-#---------------------------------------------------------------------------------
-endif
-#---------------------------------------------------------------------------------
-
-#RAW2C = c:/devkitpro/devkitppc/bin/raw2c
-RAW2C = $(DEVKITARM)/bin/raw2c
-ARMBOOT := ./../armboot
-ARMBOOT-BIN := $(ARMBOOT)/target/armboot.bin
-ARMBOOT-DEPS := $(ARMBOOT)/* $(ARMBOOT)/stub/* $(ARMBOOT)/stubsb1/* $(ARMBOOT)/elfloader/*
-
 $(SOURCES)/armboot.c: $(ARMBOOT-BIN)
 	@$(RAW2C) $<
 	@mv armboot.c $(SOURCES)/
@@ -156,3 +140,19 @@ $(ARMBOOT-BIN): $(ARMBOOT-DEPS)
 	@make -C $(ARMBOOT)
 
 $(SOURCES)/main.c: $(SOURCES)/armboot.h
+
+
+#---------------------------------------------------------------------------------
+# This rule links in binary data with the .jpg extension
+#---------------------------------------------------------------------------------
+%.bin.o	:	%.bin
+%.dat.o	:	%.dat
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	$(bin2o)
+
+-include $(DEPENDS)
+
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
