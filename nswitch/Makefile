@@ -118,7 +118,7 @@ $(SOURCES)/armboot.h: $(ARMBOOT-BIN)
 $(ARMBOOT-BIN): $(ARMBOOT-DEPS)
 	@make -C $(ARMBOOT)
 
-$(SOURCES)/main.c: $(SOURCES)/armboot.h
+main.o: $(SOURCES)/main.c $(SOURCES)/armboot.h
 
 #---------------------------------------------------------------------------------
 clean:
