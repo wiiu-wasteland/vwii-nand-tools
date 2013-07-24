@@ -18,3 +18,7 @@ $(NSWITCH-SRC)/armboot.c: $(ARMBOOT-DEPS)
 
 $(NSWITCH-SRC)/armboot.h: $(ARMBOOT-DEPS)
 	@make -C $(ARMBOOT)
+
+clean:
+	@make -C $(ARMBOOT) clean
+	@make -C nswitch clean
