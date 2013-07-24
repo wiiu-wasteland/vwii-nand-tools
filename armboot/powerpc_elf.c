@@ -672,12 +672,10 @@ int powerpc_boot_file(const char *path)
 		return 0;
 	}
 
-	write32(0x1800, 0x38802000); // li r4, 0x2000
-	write32(0x1804, 0x7c800124); // mtmsr r4
-	powerpc_jump_stub(0x1808, entry);
+	powerpc_jump_stub(0x1800, entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
-	u32 oldValue = read32(0x133011C);
+	u32 oldValue = read32(0x1330108);
 
     //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
@@ -696,11 +694,11 @@ int powerpc_boot_file(const char *path)
 	do
 	{	dc_invalidaterange((void*)0x1330100,32);
 		ahb_flush_from(AHB_1);
-	}while(oldValue == read32(0x133011c));
+	}while(oldValue == read32(0x1330108));
 
 	write32(0x1330100, 0x38802000); // li r4, 0x2000
 	write32(0x1330104, 0x7c800124); // mtmsr r4
-	powerpc_jump_stub(0x1330108, 0x1800);
+	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
 
 	return 0;
