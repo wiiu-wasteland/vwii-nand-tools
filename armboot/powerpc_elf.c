@@ -665,16 +665,17 @@ int powerpc_boot_file(const char *path)
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 
 	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
-	{	flashSensor(200000,200000,200000);
-		powerpc_upload_oldstub(elfhdr.e_entry);
+	{	powerpc_upload_oldstub(entry);
 		dc_flushall();
 		powerpc_reset();
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}
 
-	u32 oldValue2 = read32(decryptionEndAddress);
-
+	write32(0x1800, 0x38802000); // li r4, 0x2000
+	write32(0x1804, 0x7c800124); // mtmsr r4
+	powerpc_jump_stub(0x1808, entry);
+	dc_flushall();
 	//this is where the end of our entry point loading stub will be
 	u32 oldValue = read32(0x133011C);
 
@@ -699,7 +700,7 @@ int powerpc_boot_file(const char *path)
 
 	write32(0x1330100, 0x38802000); // li r4, 0x2000
 	write32(0x1330104, 0x7c800124); // mtmsr r4
-	powerpc_jump_stub(0x1330108, entry);
+	powerpc_jump_stub(0x1330108, 0x1800);
 	dc_flushrange((void*)0x1330100,32);
 
 	return 0;
