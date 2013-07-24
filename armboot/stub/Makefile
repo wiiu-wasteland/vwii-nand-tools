@@ -69,6 +69,5 @@ $(TARGET_C): $(TARGET)
 	@$(RAW2C) $<
 	@$(COPY)  $(TARGET_C) ./../$(TARGET_C)
 	@$(COPY)  $(TARGET_H) ./../$(TARGET_H)
-	rm ./../$(TARGET_O)
 clean:
 	rm -rf $(TARGET_LINKED) $(TARGET) $(OBJS) $(DEPDIR) $(TARGET_C) $(TARGET_H)
