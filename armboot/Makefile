@@ -15,6 +15,7 @@ LDSCRIPT = mini.ld
 LIBS = -lgcc
 
 ELFLOADER = target/elfloader.bin
+STUB2 = stubsb1/stubsb1.bin
 STUB = stub/stub.bin
 MAKEBIN = $(CURDIR)/makebin.py
 
@@ -31,10 +32,14 @@ include common.mk
 
 #all: $(TARGET_BIN)
 
-all:
-	@$(MAKE) -C stub
-	@$(MAKE) -C stubsb1
+all: stub.h stubsb1.h
 	@$(MAKE) $(TARGET_BIN)
+
+stub.h: $(STUB)
+	@$(MAKE) -C stub
+
+stubsb1.h: $(STUB2)
+	@$(MAKE) -C stubsb1
 
 main.o: main.c
 
