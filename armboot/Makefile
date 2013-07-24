@@ -35,10 +35,10 @@ include common.mk
 all: stub.h stubsb1.h
 	@$(MAKE) $(TARGET_BIN)
 
-stub.h: $(STUB)
+stub.h: stub/*
 	@$(MAKE) -C stub
 
-stubsb1.h: $(STUB2)
+stubsb1.h: stubsb1/*
 	@$(MAKE) -C stubsb1
 
 main.o: main.c
