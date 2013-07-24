@@ -657,10 +657,6 @@ int powerpc_boot_file(const char *path)
 	FRESULT fres;
 	FIL fd;
 	u32 decryptionEndAddress, endAddress, entry;
-	udelay(300000);
-/* start first flash */
-	sensorbarOn();
-	udelay(300000);
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
@@ -668,42 +664,19 @@ int powerpc_boot_file(const char *path)
 	//decryptionEndAddress = endAddress & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 
-	sensorbarOff();
-	udelay(300000);
-/* end first flash */
-
 	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
 	{	flashSensor(200000,200000,200000);
-		flashSensor(200000,200000,200000);
-		flashSensor(200000,200000,200000);
 		powerpc_upload_oldstub(elfhdr.e_entry);
+		dc_flushall();
 		powerpc_reset();
 		gecko_printf("PPC booted!\n");
-
 		return 0;
 	}
 
 	u32 oldValue2 = read32(decryptionEndAddress);
 
-	//should turn the sensor bar on, but no idea if that memory is already accessible.
-	//and maybe it's not were we exppect it to be due to mmu settings
-	//still being disabled
-	//so, we will need to analyse the 1-512 init code.
-	//to figure out what settings are needed.
-	//right now, we just check if our stubs really stay in place.
-	//learning to walk first.
-	//powerpc_upload_stub_1800_2();
-	//powerpc_upload_array(stubsb1,0x1800,stubsb1_size);
-	//write32(0x1800, 0xAAAAAAAA);
-
-	dc_flushall();
-	
-/* start second flash */
-	sensorbarOn();
-	udelay(300000);
-
-	//this is where the decrypted instructions are that load the "entry point" before RFI
-	u32 oldValue = read32(0x133027C);
+	//this is where the end of our entry point loading stub will be
+	u32 oldValue = read32(0x133011C);
 
     //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
@@ -720,116 +693,15 @@ int powerpc_boot_file(const char *path)
 
 	// do race attack here
 	do
-	{	dc_invalidaterange((void*)0x133027c,32);
+	{	dc_invalidaterange((void*)0x1330100,32);
 		ahb_flush_from(AHB_1);
-	}while(oldValue == read32(0x133027c));
+	}while(oldValue == read32(0x133011c));
 
-	//hopefully keep other 2 cores available
-	write32(0x133010c, 0x480000f4); // unconditional branch
-	write32(0x1330208, 0x60000000); // nop
-	//write32(0x1330220, 0x60000000); // nop
-	//write32(0x133022c, 0x60000000); // nop
-//	write_stub(stub_Ox01330100_location, stub_Ox01330100, stub_Ox01330100_size);	
-//	powerpc_jump_stub(0x1800);
-	powerpc_jump_stub(0x1330218, entry);
-	dc_flushrange((void*)0x1330100,0x200 /*less needed*/);
+	write32(0x1330100, 0x38802000); // li r4, 0x2000
+	write32(0x1330104, 0x7c800124); // mtmsr r4
+	powerpc_jump_stub(0x1330108, entry);
+	dc_flushrange((void*)0x1330100,32);
 
-// end second flash
-	sensorbarOff();
-
-/*	// make sure decryption / validation didn't finish yet
-	
-	dc_invalidaterange((void*)decryptionEndAddress,32);
-	ahb_flush_from(AHB_1);
-	if(oldValue2 != read32(decryptionEndAddress))
-		binaryPanic(0);
-
-	// make sure our change actually took place (assume nothing)
-	if(oldValue == read32(0x133027c))
-		binaryPanic(0x55555555);
-	
-	// wait for decryption / validation to finish
-	do
-	{	dc_invalidaterange((void*)decryptionEndAddress,32);
-		ahb_flush_from(AHB_1);
-	}while(oldValue2 == read32(decryptionEndAddress));
-
-	udelay(300000);
-	sensorbarOn();
-/*
-	//dump decrypted memory area
-	u32 writeLength;
-	fres = f_open(&fd, "/bootmii/dump2.bin", FA_CREATE_ALWAYS|FA_WRITE);
-	if (fres != FR_OK)
-		binaryPanic(fres);	
-		
-//  return -fres;
-//	udelay(300000);
-//	sensorbarOff();
-//
-
-//	fres = f_write(&fd, &oldValue, 4, &writeLength);
-//	if (fres != FR_OK)
-//		binaryPanic(fres);
-//	udelay(300000);
-//	sensorbarOn();
-
-//
-	fres = f_write(&fd, (void*)0x1330100, endAddress+1-0x1330100,&writeLength);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-//	udelay(300000);
-//	sensorbarOff();
-
-
-
-
-
-
-
-	fres = f_close(&fd);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-
-// check 0x100 code
-
-	fres = f_open(&fd, "/bootmii/dmp100.bin", FA_CREATE_ALWAYS|FA_WRITE);
-	if (fres != FR_OK)
-		binaryPanic(fres);	
-
-	fres = f_write(&fd, (void*)0x100,(u32)(0x14) ,&writeLength);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-	fres = f_close(&fd);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-
-// check 0x1800 code
-
-	fres = f_open(&fd, "/bootmii/dmp1800.bin", FA_CREATE_ALWAYS|FA_WRITE);
-	if (fres != FR_OK)
-		binaryPanic(fres);	
-
-	fres = f_write(&fd, (void*)0x1800,(u32)(stubsb1_size) ,&writeLength);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-	fres = f_close(&fd);
-	if (fres != FR_OK)
-		binaryPanic(fres);
-*/
-
-
-
-
-/*	do
-	{	dc_invalidaterange((void*)0x1330118,32);
-		ahb_flush_from(AHB_1);
-	}while(0xAAAAAAAA == read32(0x1330118));
-*/
-
- //this gives it 10 seconds for ppc to do something and then resets everything.
-	//udelay(10000000);
-	//systemReset();
 	return 0;
 }
 
