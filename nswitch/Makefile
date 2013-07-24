@@ -122,6 +122,7 @@ $(ARMBOOT-BIN): $(ARMBOOT-DEPS)
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(SOURCES)/armboot.c $(SOURCES)/armboot.h
+	@make -C $(ARMBOOT) clean
 
 #---------------------------------------------------------------------------------
 run:
