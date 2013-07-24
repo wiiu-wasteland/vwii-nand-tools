@@ -99,6 +99,25 @@ $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
+#RAW2C = c:/devkitpro/devkitppc/bin/raw2c
+RAW2C = $(DEVKITARM)/bin/raw2c
+ARMBOOT := ./../armboot
+ARMBOOT-BIN := $(ARMBOOT)/target/armboot.bin
+ARMBOOT-DEPS := $(ARMBOOT)/* $(ARMBOOT)/stub/* $(ARMBOOT)/stubsb1/* $(ARMBOOT)/elfloader/*
+
+$(SOURCES)/armboot.c: $(ARMBOOT-BIN)
+	@$(RAW2C) $<
+	@mv armboot.c $(SOURCES)/
+	@mv armboot.h $(SOURCES)/
+
+$(SOURCES)/armboot.h: $(ARMBOOT-BIN)
+	@$(RAW2C) $<
+	@mv armboot.c $(SOURCES)/
+	@mv armboot.h $(SOURCES)/
+
+$(ARMBOOT-BIN): $(ARMBOOT-DEPS)
+	@make -C $(ARMBOOT)
+
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
