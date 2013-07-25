@@ -37,9 +37,9 @@ include common.mk
 
 all: stub.h stubsb1.h
 	@$(MAKE) $(TARGET_BIN)
-	$(RAW2C) $<
-	mv target/armboot.c $(NSWITCH)/
-	mv target/armboot.h $(NSWITCH)/
+	@$(RAW2C) $(TARGET_BIN)
+	@mv armboot.c $(NSWITCH)/
+	@mv armboot.h $(NSWITCH)/
 
 stub.h: stub/*
 	@$(MAKE) -C stub
