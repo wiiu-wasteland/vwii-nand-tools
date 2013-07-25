@@ -54,7 +54,7 @@ _start:
 		mfspr r3,947
 		lis r4,0x4000
 		not r4,r4
-		andi r3,r3,r4
+		and r3,r3,r4
 		mtspr 947,r3
 		#scr(947) &= ~0x40000000; # scr, car, and bcr are global SPRs
 	 
@@ -138,7 +138,7 @@ _start:
 	mfspr r3,1008
 	lis r4,0x10
 	not r4,r4
-	andi r3,r3,r4
+	and r3,r3,r4
 	mtspr 1008,r3
 	#hid0(1008) &= ~0x100000; # disable DPM
 	 
@@ -190,7 +190,7 @@ _start:
 	mfspr r3,1017
 	lis r4,0x20
 	not r4,r4
-	andi r3,r3,r4
+	and r3,r3,r4
 	mtspr 1017,r3
 	#l2cr(1017) &= ~0x200000; # clear L2 invalidate
 	 
