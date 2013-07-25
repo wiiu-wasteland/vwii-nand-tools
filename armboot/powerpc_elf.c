@@ -671,7 +671,7 @@ int powerpc_boot_file(const char *path)
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}
-	writeStub(0x1800, stubsb1, stubsb1_size);
+	write_stub(0x1800, stubsb1, stubsb1_size);
 	powerpc_jump_stub(0x1800+stubsb1_size, entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
