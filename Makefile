@@ -8,20 +8,11 @@ NSWITCH-DEPS = $(NSWITCH-SRC)/* $(NSWITCH-SRC)/armboot.c $(NSWITCH-SRC)/armboot.
 all: boot.dol
 
 boot.dol: $(NSWITCH)
-	@cp $(NSWITCH) ./
-
-$(NSWITCH): $(NSWITCH-DEPS)
 	@make -C nswitch
-
-$(NSWITCH-SRC)/armboot.c: $(ARMBOOT-DEPS)
 	@make -C $(ARMBOOT)
-
-$(NSWITCH-SRC)/armboot.h: $(ARMBOOT-DEPS)
-	@make -C $(ARMBOOT)
-
-$(ARMBOOT-BIN): $(ARMBOOT-DEPS)
-	@make -C $(ARMBOOT)
+	@cp $(NSWITCH) ./
 
 clean:
 	@make -C $(ARMBOOT) clean
 	@make -C nswitch clean
+	@rm boot.dol
