@@ -215,8 +215,8 @@ _start:
 # optional: enable locked L1 cache as usual
 # boring standard GPR init
 	li      r0,0
-	"# I think these 2 (r1 and r2) have other uses (stack pointer and something else)"
-	"# so I haven't put thought into what to initialize them to yet."
+# I think these 2 (r1 and r2) have other uses (stack pointer and something else)
+# so I havent put thought into what to initialize them to yet.
 	li      r3,0
 	li      r4,0
 	li      r5,0
@@ -269,17 +269,17 @@ _start:
 		mtspr 497,r3
 		#scr(947) |= 0x00400000;
 	 
-		"# do"
+# do
 	flagloop:
-			  "# (wait for some flag set from core 1 when initialized)"
-			  "# (wait for some flag set from core 2 when initialized)"
-		"# while"
+# (wait for some flag set from core 1 when initialized)"
+# (wait for some flag set from core 2 when initialized)"
+# while
 	 
-		"# jump to code start"
+# jump to code start
 	 
 	ifcore1 :
 	 
-		"# set a flag for the main core,"
+# set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
 	  core1loop0:
@@ -289,7 +289,7 @@ _start:
 	 
 	ifcore2 :
 	 
-		"# set a flag for the main core,"
+# set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
 	  core2loop0:
