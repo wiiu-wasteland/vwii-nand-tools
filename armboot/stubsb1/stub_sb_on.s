@@ -147,7 +147,7 @@ _start:
 	#l2cr(1017) = new_l2cr(?) = 0
 	 
 	mfspr r3,287
-	andi r3,r3,0xFFFF
+	andi. r3,r3,0xFFFF
 	cmpwi r3,0x100
 	bne endif3
 	#if (/*pvr(287) & 0xffff*/ r3 == 0x100)
