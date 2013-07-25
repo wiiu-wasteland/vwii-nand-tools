@@ -671,8 +671,8 @@ int powerpc_boot_file(const char *path)
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}
-
-	powerpc_jump_stub(0x1800, entry);
+	writeStub(0x1800, stubsb1, stubsb1_size);
+	powerpc_jump_stub(0x1800+stubsb1_size, entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
 	u32 oldValue = read32(0x1330108);
