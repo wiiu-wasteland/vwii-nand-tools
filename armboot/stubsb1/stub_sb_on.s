@@ -115,7 +115,7 @@ _start:
 	 
 	endelse:
 	 
-	mfspr 920,r3
+	mfspr r3,920
 	oris r3,r3,0xe000
 	mtspr 920,r3
 	#hid2(920) |= 0xe0000000; # LSQE, WPE, PSE
@@ -271,8 +271,8 @@ _start:
 	 
 # do
 	flagloop:
-# (wait for some flag set from core 1 when initialized)"
-# (wait for some flag set from core 2 when initialized)"
+# (wait for some flag set from core 1 when initialized)
+# (wait for some flag set from core 2 when initialized)
 # while
 	 
 # jump to code start
