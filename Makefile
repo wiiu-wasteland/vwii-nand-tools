@@ -4,8 +4,8 @@ NSWITCH = nswitch/boot.dol
 all: boot.dol
 
 boot.dol:
-	@make -C nswitch
 	@make -C $(ARMBOOT)
+	@make -C nswitch
 	@cp $(NSWITCH) ./
 
 clean:
