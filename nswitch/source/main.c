@@ -125,12 +125,12 @@ int main() {
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
 	//printf("Applying patches to IOS with AHBPROT\n");
-	printf("IOSPATCH_Apply() returned %d\n", IOSPATCH_Apply());
-	printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
+	/*printf("IOSPATCH_Apply() returned %d\n",*/ IOSPATCH_Apply();//);
+	/*printf("ISFS_Initialize() returned %d\n",*/ ISFS_Initialize();//);
 	//printf("__ES_Init() returned %d\n", __ES_Init());
 	//printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
-	printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
-   
+	/*printf("loadDOLfromNAND()*/ returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app");//);
+/*   
 	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
 	*redirectedGecko = (char)(0);
@@ -139,7 +139,7 @@ int main() {
 	printf("Setting magic word.\n");
 	*((u16*)(redirectedGecko+2)) = 0xDEB6;
 	DCFlushRange(redirectedGecko, 32);
- 
+*/ 
 	// ** Boot mini from mem code by giantpune ** //
 	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
@@ -155,7 +155,7 @@ int main() {
 	asm volatile("eieio");
 
 	tikview views[4] ATTRIBUTE_ALIGN(32);
-	printf("Shutting down IOS subsystems.\n");
+	//printf("Shutting down IOS subsystems.\n");
 	__IOS_ShutdownSubsystems();
 	printf("Loading IOS 254.\n");
 	__ES_Init();
@@ -203,8 +203,8 @@ int main() {
 		}
 	}
 */ 
-	printf("Waiting for mini gecko output.\n");
-	while(true)
+	//printf("Waiting for mini gecko output.\n");
+	while(true);/*
 	{ do DCInvalidateRange(redirectedGecko, 32);
 	  while(!*redirectedGecko);
 	  //VIDEO_WaitVSync();
@@ -212,6 +212,6 @@ int main() {
 	  *redirectedGecko = (char)(0);
 	  DCFlushRange(redirectedGecko, 32);
 	}
-
+*/
 	return 0;
 }
