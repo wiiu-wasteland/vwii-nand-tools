@@ -35,7 +35,6 @@ _start:
 #	b		.
 
 
-  b stubend
  
 	mfspr r3,944
 	oris r3,r3,0xc000
@@ -75,7 +74,9 @@ _start:
 	 
 	endif1:
 	 
-	# Per-core init
+	b stubend
+   
+  # Per-core init
 	# these registers and bits already exist in Broadway
 	 
 	lis r3,0x11
