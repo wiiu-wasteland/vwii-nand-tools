@@ -78,7 +78,7 @@ _start:
 	 
 	endif1:
 	 
- 	   	b stubend
+
 
   # Per-core init
 	# these registers and bits already exist in Broadway
@@ -251,7 +251,7 @@ _start:
 	li      r30,0
 	li      r31,0
 	
-	
+	 	   	b stubend
 	# Core is now initialized. Check core ID (upir) and jump to wherever
 	mfspr r3,1007
 	cmpwi r3,1
