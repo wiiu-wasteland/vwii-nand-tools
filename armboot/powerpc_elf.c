@@ -654,12 +654,12 @@ int powerpc_load_elf(char* path, u32* entry)
 
 int powerpc_boot_file(const char *path)
 {
-	FRESULT fres;
+	int fres = 0;
 	FIL fd;
 	u32 decryptionEndAddress, endAddress, entry;
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
-	gecko_printf("powerpc_load_elf returned %d .\n", powerpc_load_elf(path, &entry));
+	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path, &entry));
 	//fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
 	//decryptionEndAddress = endAddress & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
@@ -701,7 +701,7 @@ int powerpc_boot_file(const char *path)
 	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
 
-	return 0;
+	return fres;
 }
 
 
