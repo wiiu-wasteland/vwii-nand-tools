@@ -64,12 +64,12 @@ _start:
 		oris r3,r3,0x8000
 		mtspr 947,r3
 		#scr(947) |= 0x80000000;
-	   	b stubend
+
 		mfspr r3,948
 		oris r3,r3,0xfc10
 		mtspr 948,r3
 		#car(948) |= 0xfc100000; # these bit assignments are unknown
-	 
+ 	   	b stubend   
 		mfspr r3,949
 		oris r3,r3,0x0800
 		mtspr 949,r3
