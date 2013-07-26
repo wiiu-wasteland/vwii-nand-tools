@@ -44,15 +44,16 @@ _start:
 	# At this point, upir contains the core ID (0, 1, 2) that is currently
 	# executing.
 	 
- 	b stubend
     
   # Global init
 	mfspr r3,1007
 	cmpwi r3,0
-	bne endif1
+	bne core2loop0 # endif1
 	#if (/*upir(1007) == 0*/ r3)
 	 
-		mfspr r3,947
+  	b stubend
+     
+  	mfspr r3,947
 		lis r4,0x4000
 		not r4,r4
 		and r3,r3,r4
