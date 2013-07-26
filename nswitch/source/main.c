@@ -129,7 +129,7 @@ int main() {
 	/*printf("ISFS_Initialize() returned %d\n",*/ ISFS_Initialize();//);
 	//printf("__ES_Init() returned %d\n", __ES_Init());
 	//printf("Identify_SysMenu() returned %d\n", Identify_SysMenu());
-	/*printf("loadDOLfromNAND()*/ returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app");//);
+	/*printf("loadDOLfromNAND() returned %d .\n",*/ loadDOLfromNAND("/title/00000001/00000200/content/00000003.app");//);
 /*   
 	printf("\nSetting memory.\n");
 	char*redirectedGecko = (char*)0x81200000;
