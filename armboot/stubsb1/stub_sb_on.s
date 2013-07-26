@@ -69,15 +69,17 @@ _start:
 		oris r3,r3,0xfc10
 		mtspr 948,r3
 		#car(948) |= 0xfc100000; # these bit assignments are unknown
- 	   	b stubend   
-		mfspr r3,949
-		oris r3,r3,0x0800
+   
+		lis r3,0x0800
+      #mfspr r3,949
+		#oris r3,r3,0x0800
 		mtspr 949,r3
 		#bcr(949) |= 0x08000000;
 	 
 	endif1:
 	 
-   
+ 	   	b stubend
+
   # Per-core init
 	# these registers and bits already exist in Broadway
 	 
