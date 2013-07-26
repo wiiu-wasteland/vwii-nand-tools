@@ -44,7 +44,9 @@ _start:
 	# At this point, upir contains the core ID (0, 1, 2) that is currently
 	# executing.
 	 
-	# Global init
+ 	b stubend
+    
+  # Global init
 	mfspr r3,1007
 	cmpwi r3,0
 	bne endif1
@@ -74,7 +76,6 @@ _start:
 	 
 	endif1:
 	 
-	b stubend
    
   # Per-core init
 	# these registers and bits already exist in Broadway
