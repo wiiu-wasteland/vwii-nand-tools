@@ -47,7 +47,7 @@ _start:
     
   # Global init
 	mfspr r3,1007
-	cmpwi r3,1
+	cmpwi r3,2
 	bne core2loop0 # endif1
 	#if (/*upir(1007) == 0*/ r3)
 	 
