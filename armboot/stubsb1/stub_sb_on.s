@@ -47,11 +47,11 @@ _start:
     
   # Global init
 	mfspr r3,1007
-	cmpwi r3,2
+	cmpwi r3,0
 	bne core2loop0 # endif1
 	#if (/*upir(1007) == 0*/ r3)
 	 
-  	b stubend
+  	
      
   	mfspr r3,947
 		lis r4,0x4000
@@ -64,7 +64,7 @@ _start:
 		oris r3,r3,0x8000
 		mtspr 947,r3
 		#scr(947) |= 0x80000000;
-	 
+	   	b stubend
 		mfspr r3,948
 		oris r3,r3,0xfc10
 		mtspr 948,r3
