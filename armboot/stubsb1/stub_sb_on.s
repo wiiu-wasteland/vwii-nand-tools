@@ -1,4 +1,3 @@
-
 #	TinyLoad - a simple region free (original) game launcher in 4k
 
 # This code is licensed to you under the terms of the GNU GPL, version 2;
@@ -36,11 +35,12 @@ _start:
 #	b		.
 
 
-
+  b stubend
+ 
 	mfspr r3,944
 	oris r3,r3,0xc000
 	mtspr 944,r3
-	#hid5(944) |= 0xc0000000;  # enable HID5 and PIR
+	#hid5(944) |= 0xc0000000;  # enable HID5 and PIR (upir?)
 	 
 	# At this point, upir contains the core ID (0, 1, 2) that is currently
 	# executing.
@@ -246,7 +246,6 @@ _start:
 	li      r30,0
 	li      r31,0
 	
-	b stubend
 	
 	# Core is now initialized. Check core ID (upir) and jump to wherever
 	mfspr r3,1007
