@@ -70,10 +70,12 @@ _start:
 		mtspr 948,r3
 		#car(948) |= 0xfc100000; # these bit assignments are unknown
    
-		lis r3,0x0800
+		#lis r3,0x0800
+#or
       #mfspr r3,949
 		#oris r3,r3,0x0800
-		mtspr 949,r3
+      
+		#mtspr 949,r3
 		#bcr(949) |= 0x08000000;
 	 
 	endif1:
