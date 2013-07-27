@@ -97,6 +97,7 @@ _start:
 	lis r3,0xb3b0
 	mtspr 1011,r3
 	#hid4(1011) = 0xb3b00000; # 64B fetch, depth 4, SBE, ST0, LPE, L2MUM, L2CFI
+   	 	   	b stubend
 	# HID5 is new and unknown, probably mostly controls coherency and the
 	# new L2 and core interface units
 	mfspr r3,287
