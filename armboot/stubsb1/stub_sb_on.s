@@ -102,8 +102,7 @@ _start:
 	# new L2 and core interface units
 	mfspr r3,287
 	andi. r3,r3,0xFFFF
-	b endelse
-	#if(/*pvr(287) & 0xFFFF*/ r3 == 0x101)
+  #if(/*pvr(287) & 0xFFFF*/ r3 == 0x101)
 	 
 		mfspr r3,944
 		oris r3,r3,0x6FBD
@@ -133,8 +132,7 @@ _start:
 	mtmsr r3
 	#msr |= 0x2000; # enable floating point
 	 
-	 
-                
+	              
 # boring TB, decrementer, mmu init omitted
 	 
 # floating point reg init
