@@ -134,7 +134,6 @@ _start:
 	#msr |= 0x2000; # enable floating point
 	 
 	 
-   	 	   	b stubend
                 
 # boring TB, decrementer, mmu init omitted
 	 
