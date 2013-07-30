@@ -102,7 +102,7 @@ _start:
 	# new L2 and core interface units
 	mfspr r3,287
 	andi. r3,r3,0xFFFF
-	b endif2
+	b endelse
 	#if(/*pvr(287) & 0xFFFF*/ r3 == 0x101)
 	 
 		mfspr r3,944
