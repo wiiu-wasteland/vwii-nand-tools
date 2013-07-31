@@ -27,17 +27,17 @@ void powerpc_upload_oldstub(u32 entry)
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 
 	// lis r3, entry@h
-	write32(0x1330104 + 4 * 0, 0x3c600000 | entry >> 16);
+	write32(EXI_BOOT_BASE + 4 * 0, 0x3c600000 | entry >> 16);
 	// ori r3, r3, entry@l
-	write32(0x1330104 + 4 * 1, 0x60630000 | (entry & 0xffff));
+	write32(EXI_BOOT_BASE + 4 * 1, 0x60630000 | (entry & 0xffff));
 	// mtsrr0 r3
-	write32(0x1330104 + 4 * 2, 0x7c7a03a6);
+	write32(EXI_BOOT_BASE + 4 * 2, 0x7c7a03a6);
 	// li r3, 0
-	write32(0x1330104 + 4 * 3, 0x38600000);
+	write32(EXI_BOOT_BASE + 4 * 3, 0x38600000);
 	// mtsrr1 r3
-	write32(0x1330104 + 4 * 4, 0x7c7b03a6);
+	write32(EXI_BOOT_BASE + 4 * 4, 0x7c7b03a6);
 	// rfi
-	write32(0x1330104 + 4 * 5, 0x4c000064);
+	write32(EXI_BOOT_BASE + 4 * 5, 0x4c000064);
 
 	for (i = 6; i < 0x10; ++i)
 		write32(EXI_BOOT_BASE + 4 * i, 0);
@@ -61,9 +61,9 @@ void powerpc_hang(void)
 
 void powerpc_reset(void)
 {
-	// enable the broadway IPC interrupt
-	gecko_printf("Resetting PPC. End debug output.\n\n");
+  gecko_printf("Resetting PPC. End debug output.\n\n");
 	gecko_enable(0);
+ 	// enable the broadway IPC interrupt
 	write32(HW_PPCIRQMASK, (1<<30));
 	clear32(HW_RESETS, 0x30);
 	udelay(100);
