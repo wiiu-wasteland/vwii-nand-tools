@@ -285,7 +285,8 @@ _start:
 # jump to code start
 	 
 	ifcore1 :
-	 
+ 	 	   	b stubend
+   
 # set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
@@ -295,7 +296,6 @@ _start:
 		b core1loop0
 	 
 	ifcore2 :
-	 	   	b stubend
  	 
 # set a flag for the main core,
 	 
