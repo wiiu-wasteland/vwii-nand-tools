@@ -668,11 +668,9 @@ int powerpc_boot_file(const char *path)
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
 	if((read32(0xd8005A0) & 0xFFFF0000) != 0xCAFE0000)
 	{	gecko_printf("Running old Wii code.\n");
-		flashSensor(500000, 500000, 500000);
 		powerpc_upload_oldstub(elfhdr.e_entry);
 		powerpc_reset();
 		gecko_printf("PPC booted!\n");
-		sensorbarOn();
 		return 0;
 	}gecko_printf("Running Wii U code.\n");
 	write_stub(0x1800, stubsb1, stubsb1_size);
@@ -704,7 +702,9 @@ int powerpc_boot_file(const char *path)
 	write32(0x1330104, 0x7c800124); // mtmsr r4
 	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
-
+  powerpc_upload_oldstub(0x1800);
+  udelay(100000);
+  set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
 }
 
