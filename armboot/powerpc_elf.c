@@ -674,7 +674,7 @@ int powerpc_boot_file(const char *path)
 		return 0;
 	}
 	write_stub(0x1800, stubsb1, stubsb1_size);
-	powerpc_jump_stub(0x1800+stubsb1_size, entry);
+	powerpc_jump_stub(0x1800+stubsb1_size, elfhdr.e_entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
 	u32 oldValue = read32(0x1330108);
