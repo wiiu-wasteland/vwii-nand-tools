@@ -619,7 +619,7 @@ int powerpc_load_elf(char* path)
 
 	u16 count = elfhdr.e_phnum;
 	Elf32_Phdr *phdr = phdrs;
-	powerpc_hang();
+	//powerpc_hang();
 	while (count--) {
 		if (phdr->p_type != PT_LOAD) {
 			gecko_printf("Skipping PHDR of type %d\n", phdr->p_type);
