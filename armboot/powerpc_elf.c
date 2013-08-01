@@ -664,8 +664,9 @@ int powerpc_boot_file(const char *path)
 	//fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
 	//decryptionEndAddress = endAddress & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
+	
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
-	if(read32(0xd8005A0) & 0xFFFF0000 != 0xCAFE0000)
+	if((read32(0xd8005A0) & 0xFFFF0000) != 0xCAFE0000)
 	{	gecko_printf("Running old Wii code.\n");
 		flashSensor(500000, 500000, 500000);
 		powerpc_upload_oldstub(elfhdr.e_entry);
