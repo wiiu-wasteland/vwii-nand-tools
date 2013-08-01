@@ -254,14 +254,13 @@ _start:
 	li      r30,0
 	li      r31,0
 	
-	 	   	b stubend
-	# Core is now initialized. Check core ID (upir) and jump to wherever
+  # Core is now initialized. Check core ID (upir) and jump to wherever
 	mfspr r3,1007
 	cmpwi r3,1
 	#if (/*core1*/ r3 == 1)
 	beq ifcore1
 	#if (/*core2*/ r3 > 1)
-	bgt ifcore2
+	bgt stubend #ifcore2
 	#if (/*core0*/ r3 < 1)
 		# To kickstart the other cores (from core 0):
 		# core 1
@@ -278,6 +277,7 @@ _start:
 	 
 # do
 	flagloop:
+   b flagloop
 # (wait for some flag set from core 1 when initialized)
 # (wait for some flag set from core 2 when initialized)
 # while
@@ -295,7 +295,8 @@ _start:
 		b core1loop0
 	 
 	ifcore2 :
-	 
+	 	   	b stubend
+ 	 
 # set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
