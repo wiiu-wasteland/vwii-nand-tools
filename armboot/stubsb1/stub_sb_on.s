@@ -253,7 +253,7 @@ _start:
 	li      r29,0
 	li      r30,0
 	li      r31,0
-	
+	 b stubend	
   # Core is now initialized. Check core ID (upir) and jump to wherever
 	mfspr r3,1007
 	cmpwi r3,1
@@ -285,7 +285,7 @@ _start:
 # jump to code start
 	 
 	ifcore1 :
-	 b stubend
+
 # set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
