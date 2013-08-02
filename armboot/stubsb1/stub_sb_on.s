@@ -260,7 +260,7 @@ _start:
 	#if (/*core1*/ r3 == 1)
 	beq ifcore1
 	#if (/*core2*/ r3 > 1)
-	bgt stubend #ifcore2
+	bgt ifcore2
 	#if (/*core0*/ r3 < 1)
 		# To kickstart the other cores (from core 0):
 		# core 1
@@ -275,7 +275,6 @@ _start:
 		mtspr 497,r3
 		#scr(947) |= 0x00400000;
 	 
- 	 	   	b stubend
 # do
 	flagloop:
    b flagloop
