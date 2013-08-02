@@ -274,7 +274,7 @@ _start:
 		oris r3,r3,0x0040
 		mtspr 497,r3
 		#scr(947) |= 0x00400000;
-	 b stubend
+
 # do
 	flagloop:
    b flagloop
@@ -285,7 +285,7 @@ _start:
 # jump to code start
 	 
 	ifcore1 :
-   
+	 b stubend
 # set a flag for the main core,
 	 
 		# spin in a loop waiting for a vector, or whatever
