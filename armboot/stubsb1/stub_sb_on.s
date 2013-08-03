@@ -262,13 +262,13 @@ _start:
  #  #if (/*core2*/ r3 > 1)
  #  bgt ifcore2
  #  #if (/*core0*/ r3 < 1)
-bne stubend
+bne flagloop
 		# To kickstart the other cores (from core 0):
-		# core 2
+		# core 1
 		mfspr r3,947
-		oris r3,r3,0x0040
+		oris r3,r3,0x0020
 		mtspr 947,r3
-		#scr(947) |= 0x00400000;
+		#scr(947) |= 0x00200000;
 
 		# core 0 off ?
 		mfspr r3,947
@@ -277,7 +277,7 @@ bne stubend
 		and r3,r3,r4
 		mtspr 947,r3
 		#scr(947) &= ~0x00100000;
- 
+	  b stubend
 # do
 	flagloop:
    b flagloop
