@@ -269,12 +269,14 @@ bne stubend
 		oris r3,r3,0x0040
 		mtspr 947,r3
 		#scr(947) |= 0x00400000;
-	 b flagloop   
-		# core 1
+
+		# core 0 off ?
 		mfspr r3,947
-		oris r3,r3,0x0020
+		lis r4,0x0010
+		not r4,r4
+		and r3,r3,r4
 		mtspr 947,r3
-		#scr(947) |= 0x00200000;
+		#scr(947) &= ~0x00100000;
  
 # do
 	flagloop:
