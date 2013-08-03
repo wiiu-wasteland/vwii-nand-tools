@@ -253,15 +253,16 @@ _start:
 	li      r29,0
 	li      r30,0
 	li      r31,0
-	 b stubend	
+   
   # Core is now initialized. Check core ID (upir) and jump to wherever
 	mfspr r3,1007
-	cmpwi r3,1
-	#if (/*core1*/ r3 == 1)
-	beq ifcore1
-	#if (/*core2*/ r3 > 1)
-	bgt ifcore2
-	#if (/*core0*/ r3 < 1)
+	cmpwi r3,0
+#	#if (/*core1*/ r3 == 1)
+ #  beq ifcore1
+ #  #if (/*core2*/ r3 > 1)
+ #  bgt ifcore2
+ #  #if (/*core0*/ r3 < 1)
+bne flagloop
 		# To kickstart the other cores (from core 0):
 		# core 1
 		mfspr r3,947
@@ -274,7 +275,7 @@ _start:
 		oris r3,r3,0x0040
 		mtspr 497,r3
 		#scr(947) |= 0x00400000;
-
+	 b stubend 
 # do
 	flagloop:
    b flagloop
