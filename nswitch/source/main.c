@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
 			}
 		else if(argv[i][0] == '/')
 		{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
-			*((u32*)(redirectedGecko+8)) = (u32)argv[i];
+			*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(argv[i]);
 			DCFlushRange(0x81200004, 32);
 			if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
 		}
