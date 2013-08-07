@@ -81,7 +81,7 @@ ioctlv bluetoothReset[] USB_ALIGN = {
 void BTShutdown()
 {	s32 fd;
 	int rv;
-	uint32_t level;
+	//uint32_t level;
  
 	printf("Open Bluetooth Dongle\n");
 	fd = IOS_Open("/dev/usb/oh1/57e/305", 2 /* 2 = write, 1 = read */);
