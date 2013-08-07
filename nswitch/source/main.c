@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
 	initialize(rmode);
 	u32 i, c;
 	bool useIOS = false;
-	
+	char*redirectedGecko = (char*)0x81200000; 
 	for(i=1;i<argc;i++)
 	{	if(argv[i][0] == '-')
 			for(c=1; argv[i][c]; c++)
@@ -201,8 +201,8 @@ int main(int argc, char **argv) {
 					__debug = true;
 			}
 		else if(argv[i][0] == '/')
-		{	*(u32*)0x81200004 = 0x016AE570;
-			*(u32*)0x81200008 = argv[i];
+		{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
+			*((u32*)(redirectedGecko+8)) = (u32)argv[i];
 			DCFlushRange(0x81200004, 32);
 			if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
 		}
@@ -214,7 +214,6 @@ int main(int argc, char **argv) {
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
-		char*redirectedGecko = (char*)0x81200000;
 		*redirectedGecko = (char)(0);
 		*(redirectedGecko+1) = (char)(0);
 		*((u16*)(redirectedGecko+2)) = 0xDEB6;
