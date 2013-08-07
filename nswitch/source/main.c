@@ -198,12 +198,12 @@ int main(int argc, char **argv) {
 			{	if(argv[i][c] == 'i' || argv[i][c] == 'I')
 					useIOS = true;
 				else if(argv[i][c] == 'd' || argv[i][c] == 'D')
-					__debug == true;
+					__debug = true;
 			}
 		else if(argv[i][0] == '/')
 		{	*(u32*)0x81200004 = 0x016AE570;
 			*(u32*)0x81200008 = argv[i];
-			DCFlushRange(redirectedGecko, 32);
+			DCFlushRange(0x81200004, 32);
 			if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
 		}
 	}
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
-		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app");//);
+		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
 		char*redirectedGecko = (char*)0x81200000;
 		*redirectedGecko = (char)(0);
