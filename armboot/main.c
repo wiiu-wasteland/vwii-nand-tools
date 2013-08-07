@@ -29,7 +29,7 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 #include "nand.h"
 #include "boot2.h"
 
-#define PPC_BOOT_FILE "/apps/triinux/ppcboot.elf"
+#define PPC_BOOT_FILE "/apps/trinux/ppcboot.elf"
 
 FATFS fatfs;
 
@@ -41,7 +41,7 @@ u32 _main(void *base)
 	(void)base;
 
 	gecko_init();
-	gecko_printf("mini wii-u test loading\n");
+	gecko_printf("Triinux ppcboot-er loading\n");
 
 	gecko_printf("Initializing exceptions...\n");
 	exception_initialize();
