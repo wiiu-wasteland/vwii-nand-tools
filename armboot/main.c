@@ -29,7 +29,7 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 #include "nand.h"
 #include "boot2.h"
 
-#define PPC_BOOT_FILE "/apps/trinux/ppcboot.elf"
+#define PPC_BOOT_FILE "/bootmii/ppcboot.elf"
 
 FATFS fatfs;
 
@@ -91,7 +91,8 @@ u32 _main(void *base)
 
 	gecko_printf("Trying to boot:" PPC_BOOT_FILE "\n");
 
-	res = powerpc_boot_file(PPC_BOOT_FILE);
+	if(read(0x01200004) == 0x016AE570) res = powerpc_boot_file(read(0x01200008));
+   else res = powerpc_boot_file(PPC_BOOT_FILE);
 	if(res < 0) {
 		gecko_printf("Failed to boot PPC: %d\n", res);
 		if(read32(0xd8005A0) & 0xFFFF0000 == 0xCAFE0000)
