@@ -211,7 +211,7 @@ int main() {
 	#endif
 	 
 	// ** Boot mini from mem code by giantpune ** //
-/*	void *mini = memalign(32, armboot_size);  
+	void *mini = memalign(32, armboot_size);  
 	if(!mini) 
 		  return 0;    
 
@@ -235,7 +235,7 @@ int main() {
 	ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
 
   free(mini);
-*/
+/*
 	// ** boot mini without BootMii IOS code by Crediar ** //
 
 	unsigned char ES_ImportBoot2[16] =
@@ -274,7 +274,7 @@ int main() {
 			IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL );
 			#endif
 		}
-	}
+	}*/
 	#ifdef DEBUG_OUTPUT
 	printf("Waiting for mini gecko output.\n");
 	while(true)
