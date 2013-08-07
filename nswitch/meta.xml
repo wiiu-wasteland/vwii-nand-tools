@@ -5,6 +5,16 @@
 	<version>r1</version>
 	<release_date>20130708182922</release_date>
 	<short_description>Wii/vWii Linux Loader</short_description>
-	<long_description>Put any ppcboot.elf in SD:/apps/trinux and this should load it.</long_description>
+	<long_description>Put any ppcboot.elf in SD:/apps/trinux and this should load it.
+For the record, Joostin didn't want to change the name to Triinux.
+
+Arguments:
+-i use BootMii IOS
+-d show debug output
+any other arg will be interpreted as a custom path to the ppcboot.elf file</long_description>
+<arguments>
+	<arg>/apps/trinux/ppcboot.elf</arg>
+	<arg>-i</arg>
+</arguments>
 <ahb_access />
 </app>
