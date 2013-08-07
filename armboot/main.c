@@ -29,7 +29,7 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 #include "nand.h"
 #include "boot2.h"
 
-#define PPC_BOOT_FILE "/apps/trinux/ppcboot.elf"
+#define PPC_BOOT_FILE "/apps/triinux/ppcboot.elf"
 
 FATFS fatfs;
 
