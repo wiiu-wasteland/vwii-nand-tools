@@ -91,7 +91,7 @@ u32 _main(void *base)
 
 	gecko_printf("Trying to boot:" PPC_BOOT_FILE "\n");
 
-	if(read(0x01200004) == 0x016AE570) res = powerpc_boot_file(read(0x01200008));
+	if(read32(0x01200004) == 0x016AE570) res = powerpc_boot_file(read32(0x01200008));
    else res = powerpc_boot_file(PPC_BOOT_FILE);
 	if(res < 0) {
 		gecko_printf("Failed to boot PPC: %d\n", res);
