@@ -282,7 +282,7 @@ int main(int argc, char **argv) {
 				
 				u8 *buffer = (u8*)memalign( 32, 0x100 );
 				memset( buffer, 0, 0x100 );
-				
+				__IOS_ShutdownSubsystems();
 				if(__debug){
 					printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 				}else{
