@@ -277,12 +277,12 @@ int main(int argc, char **argv) {
 				void *mini = (void*)0x90100000;
 				memcpy(mini, armboot, armboot_size);
 				DCFlushRange( mini, armboot_size );
-				
+				__IOS_ShutdownSubsystems();
 				s32 fd = IOS_Open( "/dev/es", 0 );
 				
 				u8 *buffer = (u8*)memalign( 32, 0x100 );
 				memset( buffer, 0, 0x100 );
-				__IOS_ShutdownSubsystems();
+				
 				if(__debug){
 					printf("ES_ImportBoot():%d\n", IOS_IoctlvAsync( fd, 0x1F, 0, 0, (ioctlv*)buffer, NULL, NULL ) );
 				}else{
