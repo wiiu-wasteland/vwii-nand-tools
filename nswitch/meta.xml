@@ -14,7 +14,8 @@ Arguments:
 any other arg will be interpreted as a custom path to the ppcboot.elf file</long_description>
 <arguments>
 	<arg>/apps/trinux/ppcboot.elf</arg>
-	<arg>-i</arg>
+	<arg>-d</arg>
 </arguments>
-<ahb_access />
+<ahb_access/>
+<no_ios_reload/>
 </app>
