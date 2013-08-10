@@ -9,12 +9,11 @@
 For the record, Joostin didn't want to change the name to Triinux.
 
 Arguments:
--i use BootMii IOS
--d show debug output
-any other arg will be interpreted as a custom path to the ppcboot.elf file</long_description>
+bootmii= use BootMii IOS (defaults to 1)
+debug= show debug output (defaut's to 0)
+path= for a custom path to the ppcboot.elf file.</long_description>
 <arguments>
-	<arg>/apps/trinux/ppcboot.elf</arg>
-	<arg>-d</arg>
+	<arg>path=/apps/trinux/ppcboot.elf</arg>
 </arguments>
 <ahb_access/>
 <no_ios_reload/>

@@ -30,6 +30,38 @@
 #include "armboot.h"
 
 bool __debug = false;
+bool __useIOS = true;
+
+void CheckArguments(int argc, char **argv) {
+	int i;
+	char*redirectedGecko = (char*)0x81200000;
+	char*newPath = 0;
+	if(argc)
+	{	if(argv[0][0] == '/')
+			newPath = argv[0];
+		else if(argv[0][0] == 'u' || argv[0][0] == 'U')
+		{	newPath = argv[0]+4;
+			if(argv[0][0] != '/')
+				newPath++;
+		}
+		else if(argv[0][0] == 's' || argv[0][0] == 'S')
+			newPath = argv[0]+3;
+	}
+	for (i = 1; i < argc; i++) {
+		if (!strncmp("debug=",argv[i], sizeof("debug=")))
+			__debug = atoi(strchr(argv[i],'=')+1);
+		else if (!strncmp("path=",argv[i], sizeof("path=")))
+			newPath = strchr(argv[i],'=')+1;
+		else if (!strncmp("bootmii=",argv[i], sizeof("bootmii=")))
+			__useIOS = atoi(strchr(argv[i],'=')+1);
+	}
+	if(newPath)
+	{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
+		*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(newPath);
+		DCFlushRange(0x81200004, 32);
+		if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
+	}
+}
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
 				((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
@@ -189,31 +221,10 @@ int main(int argc, char **argv) {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-	u32 i, c;
-	bool useIOS = false;
-	char*redirectedGecko = (char*)0x81200000; 
-	for(i=1;i<argc;i++)
-	{	if(argv[i][0] == '-')
-			for(c=1; argv[i][c]; c++)
-			{	if(argv[i][c] == 'i' || argv[i][c] == 'I')
-					useIOS = true;
-				else if(argv[i][c] == 'd' || argv[i][c] == 'D')
-					__debug = true;
-			}
-		else if(argv[i][0] == '/')
-		{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
-			*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(argv[i]);
-			DCFlushRange(0x81200004, 32);
-			if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
-		}
-	}
-	if(__debug)
-	{	if(useIOS)printf("Args set to run from BootMii IOS.\n");
-		else printf("IOS arg not set. Running with Crediar's patch code.\n.");
-	}
+	u32 i;
+	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
-		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
@@ -222,13 +233,12 @@ int main(int argc, char **argv) {
 		*((u16*)(redirectedGecko+2)) = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
-		IosPatch_RUNTIME(true, false, false, false);
 		ISFS_Initialize();
 		if(loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"))
 			printf("Load 1-512 from NAND failed.\n");
 		else printf("1-512 loaded from NAND.\n");
 	}
-	if(useIOS){
+	if(__useIOS){
 	
 		if(__debug)printf("** Running Boot mini from mem code by giantpune. **\n");
 		
@@ -258,7 +268,13 @@ int main(int argc, char **argv) {
 		free(mini);
 	}else{
 	
-		if(__debug)printf("** Running boot mini without BootMii IOS code by Crediar. **\n");
+			/** boot mini without BootMii IOS code by Crediar. **/
+	
+		if(__debug)
+		{	printf("** Running boot mini without BootMii IOS code by Crediar. **\n");
+			printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
+		}else 
+			IosPatch_RUNTIME(true, false, false, false);
 
 		unsigned char ES_ImportBoot2[16] =
 		{
