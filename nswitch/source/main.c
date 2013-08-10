@@ -31,10 +31,10 @@
 
 bool __debug = false;
 bool __useIOS = true;
+char*redirectedGecko = (char*)0x81200000;
 
 void CheckArguments(int argc, char **argv) {
 	int i;
-	char*redirectedGecko = (char*)0x81200000;
 	char*newPath = 0;
 /*	I'll figure out switching the boot.dol for ppcboot.elf later
 	if(argc)
@@ -223,7 +223,6 @@ int main(int argc, char **argv) {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-	char*redirectedGecko = (char*)0x81200000;
 	u32 i;
 	CheckArguments(argc, argv);
 	if(__debug){
@@ -242,6 +241,8 @@ int main(int argc, char **argv) {
 		else printf("1-512 loaded from NAND.\n");
 	}
 	if(__useIOS){
+	
+			/** Boot mini from mem code by giantpune. **/
 	
 		if(__debug)printf("** Running Boot mini from mem code by giantpune. **\n");
 		
@@ -274,10 +275,7 @@ int main(int argc, char **argv) {
 			/** boot mini without BootMii IOS code by Crediar. **/
 	
 		if(__debug)
-		{	printf("** Running boot mini without BootMii IOS code by Crediar. **\n");
-			printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
-		}else 
-			IosPatch_RUNTIME(true, false, false, false);
+			printf("** Running boot mini without BootMii IOS code by Crediar. **\n");
 
 		unsigned char ES_ImportBoot2[16] =
 		{
