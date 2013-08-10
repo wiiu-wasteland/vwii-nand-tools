@@ -36,6 +36,7 @@ void CheckArguments(int argc, char **argv) {
 	int i;
 	char*redirectedGecko = (char*)0x81200000;
 	char*newPath = 0;
+/*	I'll figure out switching the boot.dol for ppcboot.elf later
 	if(argc)
 	{	if(argv[0][0] == '/')
 			newPath = argv[0];
@@ -47,6 +48,7 @@ void CheckArguments(int argc, char **argv) {
 		else if(argv[0][0] == 's' || argv[0][0] == 'S')
 			newPath = argv[0]+3;
 	}
+*/
 	for (i = 1; i < argc; i++) {
 		if (!strncmp("debug=",argv[i], sizeof("debug=")))
 			__debug = atoi(strchr(argv[i],'=')+1);
@@ -221,6 +223,7 @@ int main(int argc, char **argv) {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
+	char*redirectedGecko = (char*)0x81200000;
 	u32 i;
 	CheckArguments(argc, argv);
 	if(__debug){
