@@ -31,39 +31,19 @@
 
 bool __debug = false;
 bool __useIOS = true;
-char*redirectedGecko = (char*)0x81200000;
+char *redirectedGecko = (char*)0x81200000;
 
-void CheckArguments(int argc, char **argv) {
-	int i;
-	char*newPath = 0;
-/*	I'll figure out switching the boot.dol for ppcboot.elf later
-	if(argc)
-	{	if(argv[0][0] == '/')
-			newPath = argv[0];
-		else if(argv[0][0] == 'u' || argv[0][0] == 'U')
-		{	newPath = argv[0]+4;
-			if(argv[0][0] != '/')
-				newPath++;
-		}
-		else if(argv[0][0] == 's' || argv[0][0] == 'S')
-			newPath = argv[0]+3;
-	}
-*/
-	for (i = 1; i < argc; i++) {
-		if (!strncmp("debug=",argv[i], sizeof("debug=")))
-			__debug = atoi(strchr(argv[i],'=')+1);
-		else if (!strncmp("path=",argv[i], sizeof("path=")))
-			newPath = strchr(argv[i],'=')+1;
-		else if (!strncmp("bootmii=",argv[i], sizeof("bootmii=")))
-			__useIOS = atoi(strchr(argv[i],'=')+1);
-	}
-	if(newPath)
-	{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
-		*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(newPath);
-		DCFlushRange(0x81200004, 32);
-		if(__debug) printf("Setting ppcboot location to %s.", argv[i]);
-	}
-}
+// Check if string X is in current argument
+#define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))))
+
+// Colors for debug output
+#define	RED		"\x1b[31;1m"
+#define	GREEN	"\x1b[32;1m"
+#define	YELLOW	"\x1b[33;1m"
+#define	WHITE	"\x1b[37;1m"
+
+// Remeber to set it back to WHITE when you're done
+#define CHANGE_COLOR(X)	(printf((X)))
 
 #define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
 				((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
@@ -125,6 +105,30 @@ void BTShutdown()
 	printf("ret = %d\n", rv);
  
 	IOS_Close(fd);
+}
+
+
+void CheckArguments(int argc, char **argv) {
+	int i;
+	char * newPath = 0;
+	if(argv[0][0] == 's' || argv[0][0] == 'S') { // Make sure you're using an SD card
+		newPath = strndup(argv[0] + 3, strrchr(argv[0], '/') - argv[0] - 3);
+		strcat(newPath, "/ppcboot.elf");
+	}
+	for (i = 1; i < argc; i++) {
+		if (CHECK_ARG("debug="))
+			__debug = atoi(strchr(argv[i],'=')+1);
+		else if (CHECK_ARG("path="))
+			newPath = strchr(argv[i],'=')+1;
+		else if (CHECK_ARG("bootmii="))
+			__useIOS = atoi(strchr(argv[i],'=')+1);
+	}
+	if(newPath)
+	{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
+		*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(newPath);
+		DCFlushRange(redirectedGecko, 32);
+		if(__debug) printf("Setting ppcboot location to %s.", newPath);
+	}
 }
 
 typedef struct dol_t dol_t;
@@ -227,6 +231,7 @@ int main(int argc, char **argv) {
 	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
+		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
@@ -235,10 +240,18 @@ int main(int argc, char **argv) {
 		*((u16*)(redirectedGecko+2)) = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
+		IosPatch_RUNTIME(true, false, false, false);
 		ISFS_Initialize();
 		if(loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"))
+		{	
+			CHANGE_COLOR(RED);
 			printf("Load 1-512 from NAND failed.\n");
-		else printf("1-512 loaded from NAND.\n");
+			
+		} else {
+			CHANGE_COLOR(GREEN);
+			printf("1-512 loaded from NAND.\n");
+		}
+		CHANGE_COLOR(WHITE); // Restore default
 	}
 	if(__useIOS){
 	
@@ -317,16 +330,19 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-	if(__debug){
+	if(__debug) {
 		printf("Waiting for mini gecko output.\n");
 		while(true)
-		{ do DCInvalidateRange(redirectedGecko, 32);
-		  while(!*redirectedGecko);
-		  printf(redirectedGecko);
-		  *redirectedGecko = (char)(0);
-		  DCFlushRange(redirectedGecko, 32);
+		{	do
+			{	// Repeat until *redirectedGecko != 0
+				DCInvalidateRange(redirectedGecko, 32);
+			} while(!*redirectedGecko);
+			
+			printf(redirectedGecko);
+			*redirectedGecko = (char)(0);
+			DCFlushRange(redirectedGecko, 32);
 		}
-	}else{
+	} else {
 		printf("Waiting for ARM to reset PPC.");
 	}
 	return 0;
