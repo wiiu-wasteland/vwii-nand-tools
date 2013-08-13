@@ -35,6 +35,7 @@ struct armboot_config
 	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
 	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
 	char*path;			// a pointer to the new ppcboot path we're sending
+  char buf[256]; // a buffer to put the string in where there will still be space for mini
 };
 
 bool __debug = false;
@@ -133,9 +134,10 @@ void CheckArguments(int argc, char **argv) {
 	}
 	if(newPath)
 	{	redirectedGecko->path_magic = 0x016AE570;
-		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(newPath);
+		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(&(redirectedGecko->buf));
 		DCFlushRange(redirectedGecko, 32);
-		if(__debug) printf("Setting ppcboot location to %s.", newPath);
+      strcpy(redirectedGecko->buf, newPath);
+		if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
 	}
 }
 
