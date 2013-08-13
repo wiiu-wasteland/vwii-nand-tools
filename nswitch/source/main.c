@@ -29,9 +29,17 @@
 #include "runtimeiospatch.h"
 #include "armboot.h"
 
+struct armboot_config
+{	char str;			// character sent from armboot to be printed on screen
+	char term;			// space for a '\0' char terminating the string
+	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
+	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
+	char*path;			// a pointer to the new ppcboot path we're sending
+}
+
 bool __debug = false;
 bool __useIOS = true;
-char *redirectedGecko = (char*)0x81200000;
+armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
 // Check if string X is in current argument
 #define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))))
@@ -124,8 +132,8 @@ void CheckArguments(int argc, char **argv) {
 			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
 	if(newPath)
-	{	*((u32*)(redirectedGecko+4)) = 0x016AE570;
-		*((u32*)(redirectedGecko+8)) = (u32)MEM_VIRTUAL_TO_PHYSICAL(newPath);
+	{	redirectedGecko->path_magic = 0x016AE570;
+		redirectedGecko->path = MEM_VIRTUAL_TO_PHYSICAL(newPath);
 		DCFlushRange(redirectedGecko, 32);
 		if(__debug) printf("Setting ppcboot location to %s.", newPath);
 	}
@@ -235,9 +243,9 @@ int main(int argc, char **argv) {
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
-		*redirectedGecko = (char)(0);
-		*(redirectedGecko+1) = (char)(0);
-		*((u16*)(redirectedGecko+2)) = 0xDEB6;
+		redirectedGecko->str = '\0';
+		redirectedGecko->term = '\0';
+		redirectedGecko->debug_magic = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
@@ -332,15 +340,16 @@ int main(int argc, char **argv) {
 	}
 	if(__debug) {
 		printf("Waiting for mini gecko output.\n");
+		char* miniDebug = (char*)redirectedGecko;
 		while(true)
 		{	do
-			{	// Repeat until *redirectedGecko != 0
-				DCInvalidateRange(redirectedGecko, 32);
-			} while(!*redirectedGecko);
+			{	// Repeat until *miniDebug != 0 ("")
+				DCInvalidateRange(miniDebug, 32);
+			} while(!*miniDebug);
 			
-			printf(redirectedGecko);
-			*redirectedGecko = (char)(0);
-			DCFlushRange(redirectedGecko, 32);
+			printf(miniDebug);
+			*miniDebug = '\0';
+			DCFlushRange(miniDebug, 32);
 		}
 	} else {
 		printf("Waiting for ARM to reset PPC.");
