@@ -129,7 +129,7 @@ void CheckArguments(int argc, char **argv) {
 		if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("path="))
-		 {  strcpy(sredirectedGecko->buf, trchr(argv[i],'=')+1);
+		 {  strcpy(redirectedGecko->buf, strchr(argv[i],'=')+1);
        newPath = true;
     }
 		else if (CHECK_ARG("bootmii="))
