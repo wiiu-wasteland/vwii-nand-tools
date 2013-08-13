@@ -119,26 +119,27 @@ void BTShutdown()
 
 void CheckArguments(int argc, char **argv) {
 	int i;
-	char * newPath = 0;
-	if(argv[0][0] == 's' || argv[0][0] == 'S') { // Make sure you're using an SD card
-		newPath = strndup(argv[0] + 3, strrchr(argv[0], '/') - argv[0] - 3);
-		strcat(newPath, "/ppcboot.elf");
+	bool newPath = false;
+	if(argv[0][0] == 's' || argv[0][0] == 'S') { strcpy(redirectedGecko->buf, argv[0]+3); // Make sure you're using an SD card
+		*(strrchr(redirectedGecko->buf, '/')+1) = '\0';
+		strcat(redirectedGecko->buf, "/ppcboot.elf");
+      newPath = true;
 	}
 	for (i = 1; i < argc; i++) {
 		if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("path="))
-			newPath = strchr(argv[i],'=')+1;
+		 {  strcpy(sredirectedGecko->buf, trchr(argv[i],'=')+1);
+       newPath = true;
+    }
 		else if (CHECK_ARG("bootmii="))
 			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
 	if(newPath)
 	{	redirectedGecko->path_magic = 0x016AE570;
 		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(&(redirectedGecko->buf));
-		DCFlushRange(redirectedGecko, 32);
-      strcpy(redirectedGecko->buf, newPath);
-      free(newPath);
-		if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
+		DCFlushRange(redirectedGecko, 288);
+  	if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
 	}
 }
 
