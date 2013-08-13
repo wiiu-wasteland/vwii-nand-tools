@@ -29,13 +29,13 @@
 #include "runtimeiospatch.h"
 #include "armboot.h"
 
+typedef struct armboot_config armboot_config;
 struct armboot_config
-{	char str;			// character sent from armboot to be printed on screen
-	char term;			// space for a '\0' char terminating the string
+{	char str[2];		// character sent from armboot to be printed on screen
 	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
 	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
 	char*path;			// a pointer to the new ppcboot path we're sending
-}
+};
 
 bool __debug = false;
 bool __useIOS = true;
@@ -243,8 +243,8 @@ int main(int argc, char **argv) {
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
 		printf("Setting magic word.\n");
-		redirectedGecko->str = '\0';
-		redirectedGecko->term = '\0';
+		redirectedGecko->str[0] = '\0';
+		redirectedGecko->str[1] = '\0';
 		redirectedGecko->debug_magic = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
