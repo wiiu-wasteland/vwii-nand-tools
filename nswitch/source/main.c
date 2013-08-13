@@ -137,6 +137,7 @@ void CheckArguments(int argc, char **argv) {
 		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(&(redirectedGecko->buf));
 		DCFlushRange(redirectedGecko, 32);
       strcpy(redirectedGecko->buf, newPath);
+      free(newPath);
 		if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
 	}
 }
