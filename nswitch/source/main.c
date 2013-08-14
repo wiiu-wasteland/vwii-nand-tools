@@ -53,22 +53,6 @@ armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 // Remeber to set it back to WHITE when you're done
 #define CHANGE_COLOR(X)	(printf((X)))
 
-#define le32(i) (((((u32) i) & 0xFF) << 24) | ((((u32) i) & 0xFF00) << 8) | \
-				((((u32) i) & 0xFF0000) >> 8) | ((((u32) i) & 0xFF000000) >> 24))
-// Enable interrupt flag.
-#define MSR_EE 0x00008000
- 
-// Disable interrupts.
-#define _CPU_ISR_Disable( _isr_cookie ) \
-  { register u32 _disable_mask = MSR_EE; \
-    _isr_cookie = 0; \
-    asm volatile ( \
-	"mfmsr %0; andc %1,%0,%1; mtmsr %1" : \
-	"=&r" ((_isr_cookie)), "=&r" ((_disable_mask)) : \
-	"0" ((_isr_cookie)), "1" ((_disable_mask)) \
-	); \
-  }
- 
 // Alignment required for USB structures (I don't know if this is 32 or less).
 #define USB_ALIGN __attribute__ ((aligned(32)))
  
@@ -118,7 +102,7 @@ void CheckArguments(int argc, char **argv) {
 	int i;
 	bool newPath = false;
 	char*tmpStr;
-	if(__debug) printf("%s\n",argv[0]);
+	if(__debug) printf("argv[0]:%s\n",argv[0]);
 	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
 	{	strcpy(redirectedGecko->buf, argv[0]+3);
 		*strrchr(redirectedGecko->buf, '/') = '\0';
@@ -127,7 +111,7 @@ void CheckArguments(int argc, char **argv) {
 		newPath = true;
 	}
 	for (i = 1; i < argc; i++)
-	{	if (__debug) printf("%s\n",argv[i]);
+	{	if (__debug) printf("argv[%d]:%s\n", i, argv[i]);
 		if (CHECK_ARG("debug="))
 		{	tmpStr = strchr(argv[i],'=')+1;
 			__debug = atoi(tmpStr);
