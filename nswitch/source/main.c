@@ -34,8 +34,7 @@ struct armboot_config
 {	char str[2];		// character sent from armboot to be printed on screen
 	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
 	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
-	char*path;			// a pointer to the new ppcboot path we're sending
-  char buf[256]; // a buffer to put the string in where there will still be space for mini
+	char buf[256]; // a buffer to put the string in where there will still be space for mini
 };
 
 bool __debug = true;
@@ -103,7 +102,6 @@ ioctlv bluetoothReset[] USB_ALIGN = {
 void BTShutdown()
 {	s32 fd;
 	int rv;
-	//uint32_t level;
  
 	printf("Open Bluetooth Dongle\n");
 	fd = IOS_Open("/dev/usb/oh1/57e/305", 2 /* 2 = write, 1 = read */);
@@ -116,31 +114,41 @@ void BTShutdown()
 	IOS_Close(fd);
 }
 
-
 void CheckArguments(int argc, char **argv) {
 	int i;
-	bool newPath = false; printf("%s\n",argv[0]);
+	bool newPath = false;
+	char*tmpStr;
+	if(__debug) printf("%s\n",argv[0]);
 	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
 	{	strcpy(redirectedGecko->buf, argv[0]+3);
 		*(strrchr(redirectedGecko->buf, '/')+1) = '\0';
 		strcat(redirectedGecko->buf, "/ppcboot.elf");
+		if (__debug) printf("startup path %s\n", redirectedGecko->buf);
 		newPath = true;
 	}
-	for (i = 1; i < argc; i++) { printf("%s\n",argv[i]);
+	for (i = 1; i < argc; i++)
+	{	if (__debug) printf("%s\n",argv[i]);
 		if (CHECK_ARG("debug="))
-			__debug = atoi(strchr(argv[i],'=')+1);
+		{	tmpStr = strchr(argv[i],'=')+1;
+			__debug = atoi(tmpStr);
+			if (__debug) printf("debug %s %d\n",tmpStr, __debug);
+		}
 		else if (CHECK_ARG("path="))
-		{	strcpy(redirectedGecko->buf, strchr(argv[i],'=')+1);
+		{	tmpStr = strchr(argv[i],'=')+1;
+			strcpy(redirectedGecko->buf, tmpStr);
+			if (__debug) printf("path %s\n(%s)\n", tmpStr, redirectedGecko->buf);
 			newPath = true;
 		}
 		else if (CHECK_ARG("bootmii="))
-			__useIOS = atoi(strchr(argv[i],'=')+1);
+		{	tmpStr = strchr(argv[i],'=')+1;
+			__useIOS = atoi(tmpStr);
+			if (__debug) printf("bootmii %s %d\n",tmpStr, __useIOS);
+		}
 	}
 	if(newPath)
 	{	redirectedGecko->path_magic = 0x016AE570;
-		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(&(redirectedGecko->buf));
 		DCFlushRange(redirectedGecko, 288);
-		if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
+		if(__debug) printf("Setting ppcboot location to %s.\n", redirectedGecko->buf);
 	}
 }
 
@@ -163,14 +171,12 @@ int loadDOLfromNAND(const char *path)
 {
 	int fd ATTRIBUTE_ALIGN(32);
 	s32 fres;
-	//fstats *status ATTRIBUTE_ALIGN(32);
 	dol_t dol_hdr ATTRIBUTE_ALIGN(32);
 	
 	if(__debug) printf("Loading DOL file: %s .\n", path);
 	fd = ISFS_Open(path, ISFS_OPEN_READ);
 	if (fd < 0)
 		return fd;
-	//printf("ISFS_GetFileStats() returned %d .\n", ISFS_GetFileStats(fd, status));
 	if(__debug) printf("Reading header.\n");
 	fres = ISFS_Read(fd, &dol_hdr, sizeof(dol_t));
 	if (fres < 0)
