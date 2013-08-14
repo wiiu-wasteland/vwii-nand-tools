@@ -38,7 +38,7 @@ struct armboot_config
   char buf[256]; // a buffer to put the string in where there will still be space for mini
 };
 
-bool __debug = false;
+bool __debug = true;
 bool __useIOS = true;
 armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
@@ -119,19 +119,20 @@ void BTShutdown()
 
 void CheckArguments(int argc, char **argv) {
 	int i;
-	bool newPath = false;
-	if(argv[0][0] == 's' || argv[0][0] == 'S') { strcpy(redirectedGecko->buf, argv[0]+3); // Make sure you're using an SD card
+	bool newPath = false; printf("%s\n",argv[0]);
+	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
+	{	strcpy(redirectedGecko->buf, argv[0]+3);
 		*(strrchr(redirectedGecko->buf, '/')+1) = '\0';
 		strcat(redirectedGecko->buf, "/ppcboot.elf");
-      newPath = true;
+		newPath = true;
 	}
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; i++) { printf("%s\n",argv[i]);
 		if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("path="))
-		 {  strcpy(redirectedGecko->buf, strchr(argv[i],'=')+1);
-       newPath = true;
-    }
+		{	strcpy(redirectedGecko->buf, strchr(argv[i],'=')+1);
+			newPath = true;
+		}
 		else if (CHECK_ARG("bootmii="))
 			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
@@ -139,7 +140,7 @@ void CheckArguments(int argc, char **argv) {
 	{	redirectedGecko->path_magic = 0x016AE570;
 		redirectedGecko->path = (char*)MEM_VIRTUAL_TO_PHYSICAL(&(redirectedGecko->buf));
 		DCFlushRange(redirectedGecko, 288);
-  	if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
+		if(__debug) printf("Setting ppcboot location to %s.", redirectedGecko->buf);
 	}
 }
 
