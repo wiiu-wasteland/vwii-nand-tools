@@ -37,12 +37,12 @@ struct armboot_config
 	char buf[256]; // a buffer to put the string in where there will still be space for mini
 };
 
-bool __debug = true;
+bool __debug = false;
 bool __useIOS = true;
 armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
 // Check if string X is in current argument
-#define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))))
+#define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))-1))
 
 // Colors for debug output
 #define	RED		"\x1b[31;1m"
