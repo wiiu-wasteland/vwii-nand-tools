@@ -101,8 +101,9 @@ u32 _main(void *base)
   }
 	if(res < 0) {
 		gecko_printf("Failed to boot PPC: %d\n", res);
-		if(read32(0xd8005A0) & 0xFFFF0000 == 0xCAFE0000)
-		{	gecko_printf("Hopefully performing system reset\n");
+		if((read32(0xd8005A0) & 0xFFFF0000) == 0xCAFE0000)
+		{	gecko_printf("Hopefully performing system reset in 10 seconds.\n");
+      if(read32(0x01200002) == 0xDEB6) udelay(10000000);
 			systemReset();
 		}else
 		{	gecko_printf("Booting System Menu\n");
