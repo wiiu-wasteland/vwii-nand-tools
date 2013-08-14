@@ -121,7 +121,7 @@ void CheckArguments(int argc, char **argv) {
 	if(__debug) printf("%s\n",argv[0]);
 	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
 	{	strcpy(redirectedGecko->buf, argv[0]+3);
-		*(strrchr(redirectedGecko->buf, '/')+1) = '\0';
+		*strrchr(redirectedGecko->buf, '/') = '\0';
 		strcat(redirectedGecko->buf, "/ppcboot.elf");
 		if (__debug) printf("startup path %s\n", redirectedGecko->buf);
 		newPath = true;
