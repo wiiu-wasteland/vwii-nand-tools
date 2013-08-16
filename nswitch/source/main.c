@@ -111,7 +111,7 @@ void CheckArguments(int argc, char **argv) {
 	{	if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
 		else if ( pathSet ||= (CHECK_ARG("path=")) )
-			strcpy(path, strchr(argv[i],'=')+1);
+			strcpy(newPath, strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("bootmii="))
 			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
