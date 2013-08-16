@@ -103,9 +103,8 @@ void CheckArguments(int argc, char **argv) {
 	bool pathSet = false;
 	char*newPath = redirectedGecko->buf;
 	if(( pathSet = (argv[0][0] == 's' || argv[0][0] == 'S') )) // Make sure you're using an SD card
-	{	strcpy(newPath, argv[0]+3);
-		*strrchr(newPath, '/') = '\0';
-		strcat(newPath, "/ppcboot.elf");
+	{	*strrchr(argv[0], '/') = '\0';
+		snprintf(newPath, sizeof(redirectedGecko->buf), "%s/ppcboot.elf", argv[0]+3);
 	}
 	for (i = 1; i < argc; i++)
 	{	if (CHECK_ARG("debug="))
