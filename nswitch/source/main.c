@@ -100,39 +100,25 @@ void BTShutdown()
 
 void CheckArguments(int argc, char **argv) {
 	int i;
-	bool newPath = false;
-	char*tmpStr;
-	if(__debug) printf("argv[0]:%s\n",argv[0]);
-	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
-	{	strcpy(redirectedGecko->buf, argv[0]+3);
-		*strrchr(redirectedGecko->buf, '/') = '\0';
-		strcat(redirectedGecko->buf, "/ppcboot.elf");
-		if (__debug) printf("startup path %s\n", redirectedGecko->buf);
-		newPath = true;
+	bool pathSet = false;
+	char*newPath = redirectedGecko->buf;
+	if(pathSet = (argv[0][0] == 's' || argv[0][0] == 'S')) // Make sure you're using an SD card
+	{	strcpy(newPath, argv[0]+3);
+		*strrchr(newPath, '/') = '\0';
+		strcat(newPath, "/ppcboot.elf");
 	}
 	for (i = 1; i < argc; i++)
-	{	if (__debug) printf("argv[%d]:%s\n", i, argv[i]);
-		if (CHECK_ARG("debug="))
-		{	tmpStr = strchr(argv[i],'=')+1;
-			__debug = atoi(tmpStr);
-			if (__debug) printf("debug %s %d\n",tmpStr, __debug);
-		}
-		else if (CHECK_ARG("path="))
-		{	tmpStr = strchr(argv[i],'=')+1;
-			strcpy(redirectedGecko->buf, tmpStr);
-			if (__debug) printf("path %s\n(%s)\n", tmpStr, redirectedGecko->buf);
-			newPath = true;
-		}
+	{	if (CHECK_ARG("debug="))
+			__debug = atoi(strchr(argv[i],'=')+1);
+		else if ( pathSet ||= (CHECK_ARG("path=")) )
+			strcpy(path, strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("bootmii="))
-		{	tmpStr = strchr(argv[i],'=')+1;
-			__useIOS = atoi(tmpStr);
-			if (__debug) printf("bootmii %s %d\n",tmpStr, __useIOS);
-		}
+			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
-	if(newPath)
+	if(pathSet)
 	{	redirectedGecko->path_magic = 0x016AE570;
 		DCFlushRange(redirectedGecko, 288);
-		if(__debug) printf("Setting ppcboot location to %s.\n", redirectedGecko->buf);
+		if(__debug) printf("Setting ppcboot location to %s.\n", path);
 	}
 }
 
