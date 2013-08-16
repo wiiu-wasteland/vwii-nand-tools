@@ -102,7 +102,7 @@ void CheckArguments(int argc, char **argv) {
 	int i;
 	bool pathSet = false;
 	char*newPath = redirectedGecko->buf;
-	if(pathSet = (argv[0][0] == 's' || argv[0][0] == 'S')) // Make sure you're using an SD card
+	if(( pathSet = (argv[0][0] == 's' || argv[0][0] == 'S') )) // Make sure you're using an SD card
 	{	strcpy(newPath, argv[0]+3);
 		*strrchr(newPath, '/') = '\0';
 		strcat(newPath, "/ppcboot.elf");
@@ -110,7 +110,7 @@ void CheckArguments(int argc, char **argv) {
 	for (i = 1; i < argc; i++)
 	{	if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
-		else if ( pathSet ||= (CHECK_ARG("path=")) )
+		else if ( pathSet |= (CHECK_ARG("path=")) )
 			strcpy(newPath, strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("bootmii="))
 			__useIOS = atoi(strchr(argv[i],'=')+1);
@@ -118,7 +118,7 @@ void CheckArguments(int argc, char **argv) {
 	if(pathSet)
 	{	redirectedGecko->path_magic = 0x016AE570;
 		DCFlushRange(redirectedGecko, 288);
-		if(__debug) printf("Setting ppcboot location to %s.\n", path);
+		if(__debug) printf("Setting ppcboot location to %s.\n", newPath);
 	}
 }
 
