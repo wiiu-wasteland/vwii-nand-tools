@@ -43,7 +43,7 @@ armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
 // Check if string X is in current argument
 #define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))-1))
-
+#define CHECK_ARG_VAL(X) (argv[i] + sizeof((X)))
 // Colors for debug output
 #define	RED		"\x1b[31;1m"
 #define	GREEN	"\x1b[32;1m"
@@ -108,11 +108,11 @@ void CheckArguments(int argc, char **argv) {
 	}
 	for (i = 1; i < argc; i++)
 	{	if (CHECK_ARG("debug="))
-			__debug = atoi(strchr(argv[i],'=')+1);
+			__debug = atoi(CHECK_ARG_VAL("debug="));
 		else if (CHECK_ARG("path="))
-			pathToSet = strcpy(newPath, strchr(argv[i],'=')+1);
+			pathToSet = strcpy(newPath, CHECK_ARG_VAL("path="));
 		else if (CHECK_ARG("bootmii="))
-			__useIOS = atoi(strchr(argv[i],'=')+1);
+			__useIOS = atoi(CHECK_ARG_VAL("bootmii="));
 	}
 	if(pathToSet)
 	{	redirectedGecko->path_magic = 0x016AE570;
