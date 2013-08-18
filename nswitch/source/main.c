@@ -34,7 +34,7 @@ struct armboot_config
 {	char str[2];		// character sent from armboot to be printed on screen
 	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
 	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
-	char buf[256]; // a buffer to put the string in where there will still be space for mini
+	char buf[256];		// a buffer to put the string in where there will still be space for mini
 };
 
 bool __debug = false;
@@ -100,24 +100,25 @@ void BTShutdown()
 
 void CheckArguments(int argc, char **argv) {
 	int i;
-	bool pathSet = false;
+	char*pathToSet = 0;
 	char*newPath = redirectedGecko->buf;
-	if(( pathSet = (argv[0][0] == 's' || argv[0][0] == 'S') )) // Make sure you're using an SD card
-	{	*strrchr(argv[0], '/') = '\0';
-		snprintf(newPath, sizeof(redirectedGecko->buf), "%s/ppcboot.elf", argv[0]+3);
+	if(argv[0][0] == 's' || argv[0][0] == 'S') // Make sure you're using an SD card
+	{	pathToSet = strndup(argv[0] + 3, strrchr(argv[0], '/') - argv[0] - 3);
+		snprintf(newPath, sizeof(redirectedGecko->buf), "%s/ppcboot.elf", pathToSet);
 	}
 	for (i = 1; i < argc; i++)
 	{	if (CHECK_ARG("debug="))
 			__debug = atoi(strchr(argv[i],'=')+1);
-		else if ( pathSet |= (CHECK_ARG("path=")) )
-			strcpy(newPath, strchr(argv[i],'=')+1);
+		else if (CHECK_ARG("path="))
+			pathToSet = strcpy(newPath, strchr(argv[i],'=')+1);
 		else if (CHECK_ARG("bootmii="))
 			__useIOS = atoi(strchr(argv[i],'=')+1);
 	}
-	if(pathSet)
+	if(pathToSet)
 	{	redirectedGecko->path_magic = 0x016AE570;
 		DCFlushRange(redirectedGecko, 288);
 		if(__debug) printf("Setting ppcboot location to %s.\n", newPath);
+		free(pathToSet);
 	}
 }
 
