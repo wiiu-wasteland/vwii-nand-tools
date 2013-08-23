@@ -44,6 +44,7 @@ armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 // Check if string X is in current argument
 #define CHECK_ARG(X) (!strncmp((X), argv[i], sizeof((X))-1))
 #define CHECK_ARG_VAL(X) (argv[i] + sizeof((X)))
+#define DEBUG(...) if (__debug) printf(__VA_ARGS__)
 // Colors for debug output
 #define	RED		"\x1b[31;1m"
 #define	GREEN	"\x1b[32;1m"
@@ -117,7 +118,7 @@ void CheckArguments(int argc, char **argv) {
 	if(pathToSet)
 	{	redirectedGecko->path_magic = 0x016AE570;
 		DCFlushRange(redirectedGecko, 288);
-		if(__debug) printf("Setting ppcboot location to %s.\n", newPath);
+		DEBUG("Setting ppcboot location to %s.\n", newPath);
 		free(pathToSet);
 	}
 }
@@ -143,15 +144,15 @@ int loadDOLfromNAND(const char *path)
 	s32 fres;
 	dol_t dol_hdr ATTRIBUTE_ALIGN(32);
 	
-	if(__debug) printf("Loading DOL file: %s .\n", path);
+	DEBUG("Loading DOL file: %s .\n", path);
 	fd = ISFS_Open(path, ISFS_OPEN_READ);
 	if (fd < 0)
 		return fd;
-	if(__debug) printf("Reading header.\n");
+	DEBUG("Reading header.\n");
 	fres = ISFS_Read(fd, &dol_hdr, sizeof(dol_t));
 	if (fres < 0)
 		return fres;
-	if(__debug)printf("Loading sections.\n");
+	DEBUG("Loading sections.\n");
 	int ii;
 
 	/* TEXT SECTIONS */
@@ -246,7 +247,7 @@ int main(int argc, char **argv) {
 	
 			/** Boot mini from mem code by giantpune. **/
 	
-		if(__debug)printf("** Running Boot mini from mem code by giantpune. **\n");
+		DEBUG("** Running Boot mini from mem code by giantpune. **\n");
 		
 		void *mini = memalign(32, armboot_size);  
 		if(!mini) 
@@ -262,7 +263,7 @@ int main(int argc, char **argv) {
 		asm volatile("eieio");
 
 		tikview views[4] ATTRIBUTE_ALIGN(32);
-		if(__debug) printf("Shutting down IOS subsystems.\n");
+		DEBUG("Shutting down IOS subsystems.\n");
 		__IOS_ShutdownSubsystems();
 		printf("Loading IOS 254.\n");
 		__ES_Init();
@@ -276,19 +277,18 @@ int main(int argc, char **argv) {
 	
 			/** boot mini without BootMii IOS code by Crediar. **/
 	
-		if(__debug)
-			printf("** Running boot mini without BootMii IOS code by Crediar. **\n");
+		DEBUG("** Running boot mini without BootMii IOS code by Crediar. **\n");
 
 		unsigned char ES_ImportBoot2[16] =
 		{
 			0x68, 0x4B, 0x2B, 0x06, 0xD1, 0x0C, 0x68, 0x8B, 0x2B, 0x00, 0xD1, 0x09, 0x68, 0xC8, 0x68, 0x42
 		};
-		if(__debug)printf("Searching for ES_ImportBoot2.\n");
+		DEBUG("Searching for ES_ImportBoot2.\n");
 		
 		for( i = 0x939F0000; i < 0x939FE000; i+=2 )
 		{	
 			if( memcmp( (void*)(i), ES_ImportBoot2, sizeof(ES_ImportBoot2) ) == 0 )
-			{	if(__debug)printf("Found. Patching.\n");
+			{	DEBUG("Found. Patching.\n");
 				DCInvalidateRange( (void*)i, 0x20 );
 				
 				*(vu32*)(i+0x00)	= 0x48034904;	// LDR R0, 0x10, LDR R1, 0x14
@@ -299,9 +299,9 @@ int main(int argc, char **argv) {
 				*(vu32*)(i+0x14)	= 0x0000FF01;	// version
 
 				DCFlushRange( (void*)i, 0x20 );
-				if(__debug)printf("Flushed. Shutting down IOS subsystems.\n");
+				DEBUG("Flushed. Shutting down IOS subsystems.\n");
 				__IOS_ShutdownSubsystems();
-				if(__debug)printf("Copying Mini into place.\n");
+				DEBUG("Copying Mini into place.\n");
 				void *mini = (void*)0x90100000;
 				memcpy(mini, armboot, armboot_size);
 				DCFlushRange( mini, armboot_size );
