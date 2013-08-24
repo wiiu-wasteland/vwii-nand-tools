@@ -695,16 +695,16 @@ int powerpc_boot_file(const char *path)
 	// do race attack here
 	do
 	{	dc_invalidaterange((void*)0x1330100,32);
-		ahb_flush_from(AHB_1);
+		//ahb_flush_from(AHB_1);
 	}while(oldValue == read32(0x1330108));
 
 	write32(0x1330100, 0x38802000); // li r4, 0x2000
 	write32(0x1330104, 0x7c800124); // mtmsr r4
 	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
-  powerpc_upload_oldstub(0x1800);
-   udelay(100000);
-   set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
+	powerpc_upload_oldstub(0x1800);
+	udelay(100000);
+	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
 }
 
