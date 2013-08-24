@@ -694,7 +694,7 @@ int powerpc_boot_file(const char *path)
 
 	// do race attack here
 	do
-	{	//dc_invalidaterange((void*)0x1330100,32);
+	{	dc_invalidaterange((void*)0x1330100,32);
 		//ahb_flush_from(AHB_1);
 	}while(oldValue == read32(0x1330108));
 
