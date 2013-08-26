@@ -41,7 +41,17 @@ u32 _main(void *base)
 	(void)base;
 
 	gecko_init();
-	gecko_printf("Triinux ppcboot-er loading\n");
+	gecko_printf("Trinux ppcboot-er loading.\n");
+
+	gecko_printf("Testing bits of reset register 0x0D8005E0.\n");
+	u32 i, RESETREG=0x0D8005E0;
+	for(i=0; i<32; i++)
+	{	gecko_printf("Testing bit 1<<%d...", i);
+		udelay(1000000);
+		set32(1<<i, RESETREG);
+		gecko_printf("done(%08x)\n", read32(RESETREG));
+		udelay(1000000);
+	}
 
 	gecko_printf("Initializing exceptions...\n");
 	exception_initialize();
