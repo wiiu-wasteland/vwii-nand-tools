@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
 	initialize(rmode);
 	u32 i;
 	CheckArguments(argc, argv);
-	if(__debug){
+	if(__debug=true){
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
