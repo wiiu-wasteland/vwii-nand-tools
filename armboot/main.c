@@ -58,7 +58,7 @@ u32 _main(void *base)
 		udelay(1000000);
 	}
 
-  gecko_printf("IOSflags: %08x %08x %08x\n",
+	gecko_printf("IOSflags: %08x %08x %08x\n",
 		read32(0xffffff00), read32(0xffffff04), read32(0xffffff08));
 	gecko_printf("          %08x %08x %08x\n",
 		read32(0xffffff0c), read32(0xffffff10), read32(0xffffff14));

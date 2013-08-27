@@ -108,7 +108,8 @@ void CheckArguments(int argc, char **argv) {
 		snprintf(newPath, sizeof(redirectedGecko->buf), "%s/ppcboot.elf", pathToSet);
 	}
 	for (i = 1; i < argc; i++)
-	{	if (CHECK_ARG("debug="))
+	{	DEBUG("arg%d:%c", i, argv[i]);
+		if (CHECK_ARG("debug="))
 			__debug = atoi(CHECK_ARG_VAL("debug="));
 		else if (CHECK_ARG("path="))
 			pathToSet = strcpy(newPath, CHECK_ARG_VAL("path="));
