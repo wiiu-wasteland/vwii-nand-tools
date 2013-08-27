@@ -53,7 +53,7 @@ u32 _main(void *base)
 	for(i=0; i<32; i++)
 	{	gecko_printf("Testing bit 1<<%d...", i);
 		udelay(1000000);
-		set32(1<<i, RESETREG);
+		set32(RESETREG, 1<<i);
 		gecko_printf("done(%08x)\n", read32(RESETREG));
 		udelay(1000000);
 	}
