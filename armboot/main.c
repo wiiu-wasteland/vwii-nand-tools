@@ -48,14 +48,14 @@ u32 _main(void *base)
 	gecko_printf("Configuring caches and MMU...\n");
 	mem_initialize();
 
-	gecko_printf("Testing bits of reset register 0x0D8005E0. Clearing 0x1\n");
-	udelay(1000000);
-	u32 i, RESETREG=0x0D8005E0;
-	clear32(RESETREG, 0x1);
+	gecko_printf("Testing bits of reset register 0x0D8005E0. Writing 0x1.\n");
+
+	u32 i, RESETREG=0x0D8005E0, newVal = 0x1;
+	write32(RESETREG, newVal);
 	for(i=1; i<32; i++)
-	{	gecko_printf("Testing bit 1<<%d...", i);
+	{	gecko_printf("Testing bit 1<<%d(%08x)...", i, (newVal&=(1<<i)));
 		udelay(1000000);
-		set32(RESETREG, 1<<i);
+		write32(RESETREG, newVal);
 		gecko_printf("done(%08x)\n", read32(RESETREG));
 		udelay(1000000);
 	}
