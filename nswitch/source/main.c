@@ -37,7 +37,7 @@ struct armboot_config
 	char buf[256];		// a buffer to put the string in where there will still be space for mini
 };
 
-bool __debug = false;
+bool __debug = true;
 bool __useIOS = true;
 armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
