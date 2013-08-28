@@ -268,10 +268,7 @@ static u32 patch[] = {
 };
 
 static u32 boot2_patch(ioshdr *hdr) {
-	if((read32(0xd8005A0) & 0xFFFF0000) == 0xCAFE0000)
-		systemReset();
-
-	u32 i, num_matches = 0;
+  u32 i, num_matches = 0;
 	u8 *ptr = (u8 *) hdr + hdr->hdrsize + hdr->loadersize;
 
 	for (i = 0; i < hdr->elfsize; i += 1) {
@@ -286,6 +283,9 @@ static u32 boot2_patch(ioshdr *hdr) {
 }
 
 u32 boot2_run(u32 tid_hi, u32 tid_lo) {
+ 	if((read32(0xd8005A0) & 0xFFFF0000) == 0xCAFE0000)
+		systemReset();
+
 	u32 num_matches;
 	ioshdr *hdr;
 	
