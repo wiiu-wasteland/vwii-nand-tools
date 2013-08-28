@@ -41,24 +41,14 @@ u32 _main(void *base)
 	(void)base;
 
 	gecko_init();
-	gecko_printf("Trinux ppcboot-er loading.\n");
+	write32(HW_RESETS, 0x031018bf);
 
 	gecko_printf("Initializing exceptions...\n");
 	exception_initialize();
 	gecko_printf("Configuring caches and MMU...\n");
 	mem_initialize();
 
-	gecko_printf("Testing bits of HW_RESETS.\n");
-  u32 i;
-  for(i=1; i>0; i--)
-	{	gecko_printf("Testing bit 1<<%d(%08x)...\n", i, 1<<i);
-		udelay(1000000);
-		clear32(HW_RESETS, 1<<i);
-		gecko_printf("...done(%08x)\n", read32(HW_RESETS));
-		udelay(1000000);
-	}
-
-	gecko_printf("IOSflags: %08x %08x %08x\n",
+  gecko_printf("IOSflags: %08x %08x %08x\n",
 		read32(0xffffff00), read32(0xffffff04), read32(0xffffff08));
 	gecko_printf("          %08x %08x %08x\n",
 		read32(0xffffff0c), read32(0xffffff10), read32(0xffffff14));
