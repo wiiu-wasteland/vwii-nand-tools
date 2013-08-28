@@ -55,7 +55,7 @@ udelay(1000000);
 	for(i=31; i>=0; i--)
 	{	gecko_printf("Testing bit 1<<%d(%08x)...\n", i, 1<<i));
 		udelay(1000000);
-		clear32(RESETREG, newVal);
+		clear32(RESETREG, 1<<i);
 		gecko_printf("...done(%08x)\n", read32(RESETREG));
 		udelay(1000000);
 	}
