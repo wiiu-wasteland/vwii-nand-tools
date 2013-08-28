@@ -50,7 +50,7 @@ u32 _main(void *base)
 
 	gecko_printf("Testing bits of HW_RESETS.\n");
   u32 i;
-  for(i=31; i>=0; i--)
+  for(i=24; i>=0; i--)
 	{	gecko_printf("Testing bit 1<<%d(%08x)...\n", i, 1<<i);
 		udelay(1000000);
 		clear32(HW_RESETS, 1<<i);
