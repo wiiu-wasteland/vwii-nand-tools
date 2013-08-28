@@ -41,14 +41,15 @@ u32 _main(void *base)
 	(void)base;
 
 	gecko_init();
-	write32(HW_RESETS, 0x031018bf);
+	write32(HW_RESETS, 0x031018ff);
+	write32(0x0D8005E0, 0x7);
 
 	gecko_printf("Initializing exceptions...\n");
 	exception_initialize();
 	gecko_printf("Configuring caches and MMU...\n");
 	mem_initialize();
 
-  gecko_printf("IOSflags: %08x %08x %08x\n",
+	gecko_printf("IOSflags: %08x %08x %08x\n",
 		read32(0xffffff00), read32(0xffffff04), read32(0xffffff08));
 	gecko_printf("          %08x %08x %08x\n",
 		read32(0xffffff0c), read32(0xffffff10), read32(0xffffff14));
