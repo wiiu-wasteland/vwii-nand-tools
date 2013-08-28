@@ -53,7 +53,7 @@ udelay(1000000);
 	u32 i, RESETREG=0x0D8005E0;
 	write32(RESETREG, 0xFFFFFFFF);
 	for(i=31; i>=0; i--)
-	{	gecko_printf("Testing bit 1<<%d(%08x)...\n", i, 1<<i));
+	{	gecko_printf("Testing bit 1<<%d(%08x)...\n", i, 1<<i);
 		udelay(1000000);
 		clear32(RESETREG, 1<<i);
 		gecko_printf("...done(%08x)\n", read32(RESETREG));
