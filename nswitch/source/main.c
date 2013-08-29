@@ -37,7 +37,7 @@ struct armboot_config
 	char buf[256];		// a buffer to put the string in where there will still be space for mini
 };
 
-bool __debug = true;
+bool __debug = false;
 bool __useIOS = true;
 armboot_config *redirectedGecko = (armboot_config*)0x81200000;
 
@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
 	initialize(rmode);
 	u32 i;
 	CheckArguments(argc, argv);
-	if(__debug=true){
+	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
