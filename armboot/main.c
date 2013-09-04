@@ -43,7 +43,7 @@ u32 _main(void *base)
 	gecko_init();
 	write32(HW_RESETS, 0x031018ff);
 	write32(0x0D8005E0, 0x7);
-	udelay(1000000);
+	udelay(100000);
 	write32(HW_RESETS, 0xFFFFFFFF);
 	write32(0x0D8005E0, 0xFFFFFFFF);
 
