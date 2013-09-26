@@ -198,7 +198,7 @@ int loadTMDfromNAND(const char *path, char *cont_ID)
 	int fd ATTRIBUTE_ALIGN(32);
 	s32 fres;
 	u16 num_cont ATTRIBUTE_ALIGN(32);
-	u32 temp_cont_ID ATTRIBUTE_ALIGN(32)
+	u32 temp_cont_ID ATTRIBUTE_ALIGN(32);
 	
 	DEBUG("Loading TMD file: %s .\n", path);
 	fd = ISFS_Open(path, ISFS_OPEN_READ);
@@ -254,7 +254,7 @@ int main(int argc, char **argv) {
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		printf("loadTMDfromNAND() returned %d .\n", loadTMDfromNAND("/title/00000001/00000200/content/title.tmd", NAND_path+33));
-		printf("Loading %s .\n", NAND_Path);
+		printf("Loading %s .\n", NAND_path);
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND(NAND_path));
 		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
