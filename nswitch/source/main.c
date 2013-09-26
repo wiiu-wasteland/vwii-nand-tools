@@ -193,6 +193,35 @@ int loadDOLfromNAND(const char *path)
 	return 0;
 }
 
+int loadTMDfromNAND(const char *path, char *cont_ID)
+{
+	int fd ATTRIBUTE_ALIGN(32);
+	s32 fres;
+	u16 num_cont ATTRIBUTE_ALIGN(32);
+	u32 temp_cont_ID ATTRIBUTE_ALIGN(32)
+	
+	DEBUG("Loading TMD file: %s .\n", path);
+	fd = ISFS_Open(path, ISFS_OPEN_READ);
+	if (fd < 0)
+		return fd;
+	DEBUG("Reading number of contents.\n");
+	fres = ISFS_Seek(fd, 0x1DE, 0);
+	if (fres < 0)
+		return fres;
+	fres = ISFS_Read(fd, &num_cont, 2);
+	if (fres < 0)
+		return fres;
+	fres = ISFS_Seek(fd, 0x1E4 + 36*(num_cont-1), 0);
+	if (fres < 0)
+		return fres;
+	fres = ISFS_Read(fd, &temp_cont_ID, 4);
+	if (fres < 0)
+		return fres;
+	ISFS_Close(fd);
+	sprintf(cont_ID, "%08x.app", temp_cont_ID);
+	return 0;
+}
+
 static void initialize(GXRModeObj *rmode)
 {
 	static void *xfb = NULL;
@@ -218,12 +247,15 @@ int main(int argc, char **argv) {
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
 	u32 i;
+	char *NAND_path = "/title/00000001/00000200/content/XXXXXXXX.app";
 	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
-		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"));
+		printf("loadTMDfromNAND() returned %d .\n", loadTMDfromNAND("/title/00000001/00000200/content/title.tmd", NAND_path+33));
+		printf("Loading %s .\n", NAND_Path);
+		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND(NAND_path));
 		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
 		redirectedGecko->str[1] = '\0';
@@ -232,7 +264,8 @@ int main(int argc, char **argv) {
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
 		ISFS_Initialize();
-		if(loadDOLfromNAND("/title/00000001/00000200/content/00000003.app"))
+		loadTMDfromNAND("/title/00000001/00000200/content/title.tmd", NAND_path+33);
+		if(loadDOLfromNAND(NAND_path))
 		{	
 			CHANGE_COLOR(RED);
 			printf("Load 1-512 from NAND failed.\n");
