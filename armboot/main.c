@@ -94,6 +94,8 @@ u32 _main(void *base)
 	}
 
 	
+	vector = 0x10200010;
+	goto shutdown;
 
 	if(read32(0x01200004) == 0x016AE570)
 	{	gecko_printf("Trying to boot:%s\n", (char*)0x01200008);
@@ -109,8 +111,6 @@ u32 _main(void *base)
 		vector = boot2_run(1, 2);
 		goto shutdown;
 	}
-	vector = 0x10200010;
-	goto shutdown;
 
 	gecko_printf("Going into IPC mainloop...\n");
 	vector = ipc_process_slow();
