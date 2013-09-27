@@ -692,6 +692,7 @@ int powerpc_boot_file(const char *path)
 	udelay(100);
 	set32(HW_RESETS, 0x10);
 return 0;
+/*
 	// do race attack here
 	do
 	{	dc_invalidaterange((void*)0x1330100,32);
@@ -706,6 +707,7 @@ return 0;
 	udelay(100000);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
+*/
 }
 
 
