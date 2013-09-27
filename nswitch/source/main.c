@@ -193,10 +193,10 @@ int loadDOLfromNAND(const char *path)
 	return 0;
 }
 
-int loadTMDfromNAND(const char *path, char *cont_ID)
+int loadTMDfromNAND(const char *path, char *cont_ID, u32 *cont_size)
 {
 	int fd ATTRIBUTE_ALIGN(32);
-	s32 fres;
+	s32 fres, last_cont;
 	u16 num_cont ATTRIBUTE_ALIGN(32);
 	u32 temp_cont_ID ATTRIBUTE_ALIGN(32);
 	
@@ -211,14 +211,38 @@ int loadTMDfromNAND(const char *path, char *cont_ID)
 	fres = ISFS_Read(fd, &num_cont, 2);
 	if (fres < 0)
 		return fres;
-	fres = ISFS_Seek(fd, 0x1E4 + 36*(num_cont-1), 0);
+	last_cont = 0x1E4 + 36*(num_cont-1);
+	fres = ISFS_Seek(fd, last_cont, 0);
 	if (fres < 0)
 		return fres;
 	fres = ISFS_Read(fd, &temp_cont_ID, 4);
 	if (fres < 0)
 		return fres;
+	fres = ISFS_Seek(fd, last_cont+12, 0);
+	if (fres < 0)
+		return fres;
+	fres = ISFS_Read(fd, cont_size, 4);
+	if (fres < 0)
+		return fres;
 	ISFS_Close(fd);
 	sprintf(cont_ID, "%08x.app", temp_cont_ID);
+	return 0;
+}
+
+int loadBINfromNAND(const char *path, u32 size)
+{
+	int fd ATTRIBUTE_ALIGN(32);
+	s32 fres;
+	
+	DEBUG("Loading BIN file: %s .\n", path);
+	fd = ISFS_Open(path, ISFS_OPEN_READ);
+	if (fd < 0)
+		return fd;
+	fres = ISFS_Read(fd, (void*)0x90200000, size);
+	DCFlushRange(0x90200000, size);
+	if (fres < 0)
+		return fres;
+	ISFS_Close(fd);
 	return 0;
 }
 
@@ -246,16 +270,18 @@ int main(int argc, char **argv) {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-	u32 i;
-	char *NAND_path = "/title/00000001/00000200/content/XXXXXXXX.app";
+	u32 i, binSize;
+	char *NAND_path = "/title/00000001/00000002/content/XXXXXXXX.app";
 	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
-		printf("loadTMDfromNAND() returned %d .\n", loadTMDfromNAND("/title/00000001/00000200/content/title.tmd", NAND_path+33));
-		printf("Loading %s .\n", NAND_path);
+		printf("loadTMDfromNAND() returned %d for system menu.\n", loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize));
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND(NAND_path));
+		NAND_path = "/title/00000001/00000050/content/XXXXXXXX.app";
+		printf("loadTMDfromNAND() returned %d for IOS80.\n", loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize));
+		printf("loadBINfromNAND() returned %d .\n", loadBINfromNAND(NAND_path, binSize));
 		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
 		redirectedGecko->str[1] = '\0';
@@ -264,15 +290,24 @@ int main(int argc, char **argv) {
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
 		ISFS_Initialize();
-		loadTMDfromNAND("/title/00000001/00000200/content/title.tmd", NAND_path+33);
+		loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize);
 		if(loadDOLfromNAND(NAND_path))
 		{	
 			CHANGE_COLOR(RED);
-			printf("Load 1-512 from NAND failed.\n");
-			
+			printf("Load system menu from NAND failed.\n");
 		} else {
 			CHANGE_COLOR(GREEN);
-			printf("1-512 loaded from NAND.\n");
+			printf("system menu loaded from NAND.\n");
+		}
+		NAND_path = "/title/00000001/00000050/content/XXXXXXXX.app";
+		loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize);
+		if(loadBINfromNAND(NAND_path, binSize))
+		{	
+			CHANGE_COLOR(RED);
+			printf("Load IOS80 from NAND failed.\n");
+		} else {
+			CHANGE_COLOR(GREEN);
+			printf("IOS80 loaded from NAND.\n");
 		}
 		CHANGE_COLOR(WHITE); // Restore default
 	}

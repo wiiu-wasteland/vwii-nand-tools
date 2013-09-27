@@ -109,6 +109,8 @@ u32 _main(void *base)
 		vector = boot2_run(1, 2);
 		goto shutdown;
 	}
+	vector = 0x10200010;
+	goto shutdown;
 
 	gecko_printf("Going into IPC mainloop...\n");
 	vector = ipc_process_slow();
