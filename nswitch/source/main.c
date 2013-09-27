@@ -271,16 +271,16 @@ int main(int argc, char **argv) {
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
 	u32 i, binSize;
-	char *NAND_path = "/title/00000001/00000002/content/XXXXXXXX.app";
+	char *NAND_path = "/title/00000001/00000002/content/0000000c.app";
 	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
 		printf("IosPatch_RUNTIME(...) returned %i\n", IosPatch_RUNTIME(true, false, false, true));
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
-		printf("loadTMDfromNAND() returned %d for system menu.\n", loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize));
+		//printf("loadTMDfromNAND() returned %d for system menu.\n", loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize));
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND(NAND_path));
-		NAND_path = "/title/00000001/00000050/content/XXXXXXXX.app";
-		printf("loadTMDfromNAND() returned %d for IOS80.\n", loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize));
+		NAND_path = "/title/00000001/00000050/content/0000000d.app";
+		//printf("loadTMDfromNAND() returned %d for IOS80.\n", loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize));
 		printf("loadBINfromNAND() returned %d .\n", loadBINfromNAND(NAND_path, binSize));
 		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
@@ -290,7 +290,7 @@ int main(int argc, char **argv) {
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
 		ISFS_Initialize();
-		loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize);
+		//loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize);
 		if(loadDOLfromNAND(NAND_path))
 		{	
 			CHANGE_COLOR(RED);
@@ -299,8 +299,8 @@ int main(int argc, char **argv) {
 			CHANGE_COLOR(GREEN);
 			printf("system menu loaded from NAND.\n");
 		}
-		NAND_path = "/title/00000001/00000050/content/XXXXXXXX.app";
-		loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize);
+		NAND_path = "/title/00000001/00000050/content/0000000d.app";
+		//loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize);
 		if(loadBINfromNAND(NAND_path, binSize))
 		{	
 			CHANGE_COLOR(RED);
