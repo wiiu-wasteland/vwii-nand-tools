@@ -329,7 +329,7 @@ int main(int argc, char **argv) {
 
 		*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
 		asm volatile("eieio");
-      fprint("Reloading IOS. Waiting for new IOS to respond.\n");
+      printf("Reloading IOS. Waiting for new IOS to respond.\n");
       IOS_ReloadIOS(0xfe);
 /*
 		tikview views[4] ATTRIBUTE_ALIGN(32);
