@@ -128,10 +128,10 @@ _start:
 	mtspr 920,r3
 	#hid2(920) |= 0xe0000000; # LSQE, WPE, PSE
 	 
-	mfmsr r3
-	ori r3,r3,0x2000
+	#mfmsr r3
+	li r3,0x2000
 	mtmsr r3
-	#msr |= 0x2000; # enable floating point
+	#msr = 0x2000; # enable floating point
 	 
 	              
 # boring TB, decrementer, mmu init omitted
@@ -258,19 +258,25 @@ _start:
 	mfspr r3,1007
 	cmpwi r3,0
  #  #if (/*core0*/ r3 == 0)
-bne flagloop
+bne kickstartend
 		# To kickstart the other cores (from core 0):
+      
 		# core 1
 		mfspr r3,947
 		oris r3,r3,0x0020
 		mtspr 947,r3
 		#scr(947) |= 0x00200000;
+      
   	# core 2
 		mfspr r3,947
 		oris r3,r3,0x0040
 		mtspr 947,r3
 		#scr(947) |= 0x00400000;
-b stubend
+      
+kickstartend:
+	mfspr r3,1007
+	cmpwi r3,2
+   beq stubend
 # do
 	flagloop:
    b flagloop
