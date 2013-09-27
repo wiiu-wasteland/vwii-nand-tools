@@ -329,7 +329,9 @@ int main(int argc, char **argv) {
 
 		*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
 		asm volatile("eieio");
-
+      fprint("Reloading IOS. Waiting for new IOS to respond.\n");
+      IOS_ReloadIOS(0xfe);
+/*
 		tikview views[4] ATTRIBUTE_ALIGN(32);
 		DEBUG("Shutting down IOS subsystems.\n");
 		__IOS_ShutdownSubsystems();
@@ -339,7 +341,7 @@ int main(int argc, char **argv) {
 		ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
 		ES_GetTicketViews(0x00000001000000FEULL, views, numviews);
 		ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
-
+*/
 		free(mini);
 	}else{
 	
@@ -401,7 +403,7 @@ int main(int argc, char **argv) {
 			DCFlushRange(miniDebug, 32);
 		}
 	} else {
-		printf("Waiting for ARM to reset PPC.");
+		printf("IOS responded. SUCCESS. EXITING.");
 	}
 	return 0;
 }
