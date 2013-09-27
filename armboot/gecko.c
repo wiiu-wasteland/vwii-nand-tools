@@ -210,8 +210,8 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 void gecko_init(void)
 {	if(read16(0x01200002) == 0XDEB6)
 		gecko_enabled |= 1;
-	if(f_open(&logFile, "/bootmii/log.txt", FA_CREATE_ALWAYS|FA_WRITE) == FR_OK)
-		gecko_enabled |= 2;
+//	if(f_open(&logFile, "/bootmii/log.txt", FA_CREATE_ALWAYS|FA_WRITE) == FR_OK)
+//		gecko_enabled |= 2;
 	write32(EXI0_CSR, 0);
 	write32(EXI1_CSR, 0);
 	write32(EXI2_CSR, 0);
@@ -255,10 +255,10 @@ int gecko_printf(const char *fmt, ...)
 	i = vsprintf(buffer, fmt, args);
 	va_end(args);
 	fmt = buffer;
-	if(gecko_enabled & 2)
+/*	if(gecko_enabled & 2)
 	{	f_puts(fmt, &logFile);
 		f_sync(&logFile);
-	}
+	}*/
 	if(gecko_enabled & 1)
 		while(*fmt)
 		{	/*do
