@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
 		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
 		redirectedGecko->str[1] = '\0';
-		redirectedGecko->debug_magic = 0xDEB6;
+		//redirectedGecko->debug_magic = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
