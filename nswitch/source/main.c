@@ -239,7 +239,7 @@ int loadBINfromNAND(const char *path, u32 size)
 	if (fd < 0)
 		return fd;
 	fres = ISFS_Read(fd, (void*)0x90200000, size);
-	DCFlushRange(0x90200000, size);
+	DCFlushRange((void*)0x90200000, size);
 	if (fres < 0)
 		return fres;
 	ISFS_Close(fd);
