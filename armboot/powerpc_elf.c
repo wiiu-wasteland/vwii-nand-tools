@@ -120,20 +120,6 @@ const u32 stub_100_size = 5;
 
 
 
-const u32 stub_Ox01330100_size = 5;
-const u32 stub_Ox01330100_location = 0x100;
-const u32 stub_Ox01330100 =
-{
-	/*0x01330100*/  0x38600000 //li r3,0
-	/*0x01330104*/, 0x7C600124	//mtmsr r3
-	/*0x01330108*/, 0x4C00012C	//isync
- 	/*0x0133010C*/, 0x7c0004ac	//sync
-								//eieio??
- 	/*0x01330110*/, 0x48001802	//ba 0x1800
-};
-
-
-
 //another turn sensorbar on routine
 const u32 stub_1800_2_size = 5;
 const u32 stub_1800_2_location = 0x100;
