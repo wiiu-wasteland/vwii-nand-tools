@@ -275,7 +275,7 @@ bne kickstartend
       
 kickstartend:
 	mfspr r3,1007
-	cmpwi r3,0
+	cmpwi r3,2
    beq stubend
 # do
 	flagloop:
