@@ -114,7 +114,7 @@ const u32 stub_100[] =
 	/*0x108*/, 0x4C00012C	//isync
  	/*0x10c*/, 0x7c0004ac	//sync
 							//eieio??
- 	/*0x110*/, 0x480016F0	//b 0x1800
+ 	/*0x110*/, 0x48001802  //b 0x1800
 };
 const u32 stub_100_size = 5;
 
@@ -123,7 +123,7 @@ const u32 stub_100_size = 5;
 //another turn sensorbar on routine
 const u32 stub_1800_2_size = 5;
 const u32 stub_1800_2_location = 0x100;
-const u32 stub_1800_2 =
+const u32 stub_1800_2[] =
 {
 	/*0x1800*/  0x3c600d80	//lis r3,3456
 	/*0x1804*/, 0x808300c0 	//lwz r4,192(r3)
@@ -137,7 +137,7 @@ const u32 stub_1800_2 =
 //this one should flash the sensorbar
 const u32 stub_1800_size = 26;
 const u32 stub_1800_location = 0x100;
-const u32 stub_1800 =
+const u32 stub_1800[] =
 {
 
 	/*0x1800*/  0x38600005 //li   r3,5
@@ -187,7 +187,7 @@ const u32 stub_1800 =
 };
 
 
-const u32 stub_1800_1_512 =
+const u32 stub_1800_1_512[] =
 {
 
 //check_pvr_hi r4, 0x7001
@@ -547,10 +547,7 @@ int powerpc_load_dol(const char *path, u32 *entry)
 		gecko_printf("Data section of size %08x loaded from offset %08x to memory %08x.\n", dol_hdr.sizeData[ii], dol_hdr.offsetData[ii], phys);
 		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32(phys+(dol_hdr.sizeData[ii] - 1) & ~3),phys+(dol_hdr.sizeData[ii] - 1) & ~3);
 	}
-//	if (endAddress)
-//		*endAddress = end - 1;
-//	gecko_printf("endAddress = %08x\n", *endAddress);
-	*entry = dol_hdr.entrypt;
+  *entry = dol_hdr.entrypt;
 	return 0;
 }
 
@@ -643,12 +640,12 @@ int powerpc_boot_file(const char *path)
 {
 	int fres = 0; 
 	FIL fd;
-	u32 decryptionEndAddress, endAddress;
+	u32 decryptionEndAddress, entry;
 /*	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path));
-	//fres = powerpc_load_dol("/bootmii/00000003.app", &endAddress);
-	//decryptionEndAddress = endAddress & ~3; 
+	//fres = powerpc_load_dol("/bootmii/00000003.app", &entry);
+	//decryptionEndAddress = ( 0x1330100 + read32(0x133008c) ) & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 	if(fres) return fres;
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
@@ -659,7 +656,8 @@ int powerpc_boot_file(const char *path)
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}gecko_printf("Running Wii U code.\n");
-	write_stub(0x1800, stubsb1, stubsb1_size);
+	powerpc_upload_oldstub(0x1800);
+ 	write_stub(0x1800, stubsb1, stubsb1_size);
 	powerpc_jump_stub(0x1800+stubsb1_size, elfhdr.e_entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
@@ -689,8 +687,7 @@ return 0;
 	write32(0x1330104, 0x7c800124); // mtmsr r4
 	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
-	powerpc_upload_oldstub(0x1800);
-	udelay(100000);
+  udelay(100000);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
 */
