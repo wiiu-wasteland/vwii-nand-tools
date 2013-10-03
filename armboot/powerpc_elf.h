@@ -16,7 +16,7 @@ u32 virtualToPhysical(u32 virtualAddress);
 u32 makeRelativeBranch(u32 currAddr, u32 destAddr, bool linked);
 u32 makeAbsoluteBranch(u32 destAddr, bool linked);
 void powerpc_jump_stub(u32 location, u32 entry);
-void write_stub(u32 address, u32 stub[], u32 size);
+void write_stub(u32 address, const u32 stub[], u32 size);
 void powerpc_upload_array (const unsigned char* which, u32 where, const u32 len);
 int powerpc_load_dol(const char *path, u32 *entry);
 int powerpc_load_elf(const char* path);
