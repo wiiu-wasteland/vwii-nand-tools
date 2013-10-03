@@ -623,7 +623,7 @@ int powerpc_boot_file(const char *path)
 	
 	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path));
 	//fres = powerpc_load_dol("/bootmii/00000003.app", &entry);
-	//decryptionEndAddress = ( 0x1330100 + read32(0x133008c) ) & ~3; 
+	//decryptionEndAddress = ( 0x1330100 + read32(0x133008c + read32(0x1330008)) -1 ) & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 	if(fres) return fres;
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
