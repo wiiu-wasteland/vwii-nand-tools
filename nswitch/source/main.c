@@ -271,7 +271,7 @@ int main(int argc, char **argv) {
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
 	u32 i, binSize = 168512;
-	char *NAND_path = "/title/00000001/00000002/content/0000000c.app";
+	char *NAND_path = "/title/00000001/00000200/content/00000003.app";
 	CheckArguments(argc, argv);
 	if(__debug){
 		printf("Applying patches to IOS with AHBPROT\n");
@@ -279,13 +279,13 @@ int main(int argc, char **argv) {
 		printf("ISFS_Initialize() returned %d\n", ISFS_Initialize());
 		//printf("loadTMDfromNAND() returned %d for system menu.\n", loadTMDfromNAND("/title/00000001/00000002/content/title.tmd", NAND_path+33, binSize));
 		printf("loadDOLfromNAND() returned %d .\n", loadDOLfromNAND(NAND_path));
-		NAND_path = "/title/00000001/00000050/content/0000000d.app";
+/*		NAND_path = "/title/00000001/00000050/content/0000000d.app";
 		//printf("loadTMDfromNAND() returned %d for IOS80.\n", loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize));
 		printf("loadBINfromNAND() returned %d .\n", loadBINfromNAND(NAND_path, binSize));
-		printf("Setting magic word.\n");
+*/		printf("Setting magic word.\n");
 		redirectedGecko->str[0] = '\0';
 		redirectedGecko->str[1] = '\0';
-		//redirectedGecko->debug_magic = 0xDEB6;
+		redirectedGecko->debug_magic = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
 		IosPatch_RUNTIME(true, false, false, false);
@@ -294,12 +294,12 @@ int main(int argc, char **argv) {
 		if(loadDOLfromNAND(NAND_path))
 		{	
 			CHANGE_COLOR(RED);
-			printf("Load system menu from NAND failed.\n");
+			printf("Load 1-512 from NAND failed.\n");
 		} else {
 			CHANGE_COLOR(GREEN);
-			printf("system menu loaded from NAND.\n");
+			printf("1-512 loaded from NAND.\n");
 		}
-		NAND_path = "/title/00000001/00000050/content/0000000d.app";
+/*		NAND_path = "/title/00000001/00000050/content/0000000d.app";
 		//loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize);
 		if(loadBINfromNAND(NAND_path, binSize))
 		{	
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 			CHANGE_COLOR(GREEN);
 			printf("IOS80 loaded from NAND.\n");
 		}
-		CHANGE_COLOR(WHITE); // Restore default
+*/		CHANGE_COLOR(WHITE); // Restore default
 	}
 	if(__useIOS){
 	
@@ -329,9 +329,7 @@ int main(int argc, char **argv) {
 
 		*(u32*)0xc150f004 = MEM_VIRTUAL_TO_PHYSICAL(mini);  
 		asm volatile("eieio");
-      printf("Reloading IOS. Waiting for new IOS to respond.\n");
-      IOS_ReloadIOS(0xfe);
-/*
+
 		tikview views[4] ATTRIBUTE_ALIGN(32);
 		DEBUG("Shutting down IOS subsystems.\n");
 		__IOS_ShutdownSubsystems();
@@ -341,7 +339,7 @@ int main(int argc, char **argv) {
 		ES_GetNumTicketViews(0x00000001000000FEULL, &numviews);
 		ES_GetTicketViews(0x00000001000000FEULL, views, numviews);
 		ES_LaunchTitleBackground(0x00000001000000FEULL, &views[0]);
-*/
+
 		free(mini);
 	}else{
 	
@@ -403,7 +401,7 @@ int main(int argc, char **argv) {
 			DCFlushRange(miniDebug, 32);
 		}
 	} else {
-		printf("IOS responded. SUCCESS. EXITING.");
+		printf("Waiting for ARM to reset PPC.");
 	}
 	return 0;
 }

@@ -94,8 +94,6 @@ u32 _main(void *base)
 	}
 
 	
-	vector = 0x10200010;
-	goto shutdown;
 
 	if(read32(0x01200004) == 0x016AE570)
 	{	gecko_printf("Trying to boot:%s\n", (char*)0x01200008);

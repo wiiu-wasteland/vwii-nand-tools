@@ -641,7 +641,7 @@ int powerpc_boot_file(const char *path)
 	int fres = 0; 
 	FIL fd;
 	u32 decryptionEndAddress, entry;
-/*	
+	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path));
 	//fres = powerpc_load_dol("/bootmii/00000003.app", &entry);
@@ -662,7 +662,7 @@ int powerpc_boot_file(const char *path)
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
 	u32 oldValue = read32(0x1330108);
-*/
+
     //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
 	set32(HW_AHBPROT, 0xFFFFFFFF);
@@ -675,8 +675,7 @@ int powerpc_boot_file(const char *path)
 	set32(HW_RESETS, 0x20);
 	udelay(100);
 	set32(HW_RESETS, 0x10);
-return 0;
-/*
+
 	// do race attack here
 	do
 	{	dc_invalidaterange((void*)0x1330100,32);
@@ -690,7 +689,7 @@ return 0;
   udelay(100000);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
-*/
+
 }
 
 
