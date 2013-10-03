@@ -22,12 +22,6 @@ Copyright (C) 2009                      Andre Heider "dhewg" <dhewg@wiibrew.org>
 #include "string.h"
 #include "stubsb1.h"
 
-//obcd
-//missing
-typedef signed int bool;
-#define false 0
-#define true 1
-
 extern u8 __mem2_area_start[];
 
 #define PPC_MEM1_END    (0x017fffff)
@@ -479,14 +473,14 @@ void write_stub(u32 address, u32 stub[], u32 size)
 		write32(address + 4 * i, stub[i]);
 }
 
-void powerpc_upload_array (const unsigned char* which, u32 where, const int len)
+void powerpc_upload_array (const unsigned char* which, u32 where, const u32 len)
 {
 	const unsigned char* source;
 	u32 pos=0;
 	u32 opcode;
 
 	source = which;
-	while (pos < (u32)(len))
+	while (pos < len)
 	{
 		opcode = ((*(source+pos))<<24) + ((*(source+pos+1))<<16) + ((*(source+pos+2))<<8) + *(source+pos+3);
 		write32(where + pos,opcode);
@@ -527,7 +521,7 @@ int powerpc_load_dol(const char *path, u32 *entry)
 		if (phys + dol_hdr.sizeText[ii] > end)
 			end = phys + dol_hdr.sizeText[ii];
 		gecko_printf("Text section of size %08x loaded from offset %08x to memory %08x.\n", dol_hdr.sizeText[ii], dol_hdr.offsetText[ii], phys);
-		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32(phys+(dol_hdr.sizeText[ii] - 1) & ~3),phys+(dol_hdr.sizeText[ii] - 1) & ~3);
+		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32((phys+(dol_hdr.sizeText[ii] - 1)) & ~3),(phys+(dol_hdr.sizeText[ii] - 1)) & ~3);
 	}
 
 	/* DATA SECTIONS */
@@ -545,13 +539,13 @@ int powerpc_load_dol(const char *path, u32 *entry)
 		if (phys + dol_hdr.sizeData[ii] > end)
 			end = phys + dol_hdr.sizeData[ii];
 		gecko_printf("Data section of size %08x loaded from offset %08x to memory %08x.\n", dol_hdr.sizeData[ii], dol_hdr.offsetData[ii], phys);
-		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32(phys+(dol_hdr.sizeData[ii] - 1) & ~3),phys+(dol_hdr.sizeData[ii] - 1) & ~3);
+		gecko_printf("Memory area starts with %08x and ends with %08x (at address %08x)\n", read32(phys), read32((phys+(dol_hdr.sizeData[ii] - 1)) & ~3),(phys+(dol_hdr.sizeData[ii] - 1)) & ~3);
 	}
   *entry = dol_hdr.entrypt;
 	return 0;
 }
 
-int powerpc_load_elf(char* path)
+int powerpc_load_elf(const char* path)
 {
 	u32 read;
 	FIL fd;
@@ -639,8 +633,8 @@ int powerpc_load_elf(char* path)
 int powerpc_boot_file(const char *path)
 {
 	int fres = 0; 
-	FIL fd;
-	u32 decryptionEndAddress, entry;
+	//FIL fd;
+	//u32 decryptionEndAddress, entry;
 	
 	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path));

@@ -248,7 +248,7 @@ int gecko_printf(const char *fmt, ...)
 		return 0;
 	va_list args;
 	char buffer[256];
-	int i, c;
+	int i;
 	FIL logFile;
 
 	va_start(args, fmt);
