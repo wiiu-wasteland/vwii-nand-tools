@@ -467,25 +467,10 @@ const u32 memory_watcher_stub[] =
 
 //////////////////////////////// END STUBS ////////////////////////
 
-void write_stub(u32 address, u32 stub[], u32 size)
+void write_stub(u32 address, const u32 stub[], u32 size)
 {	u32 i;
 	for(i = 0; i < size; i++)
 		write32(address + 4 * i, stub[i]);
-}
-
-void powerpc_upload_array (const unsigned char* which, u32 where, const u32 len)
-{
-	const unsigned char* source;
-	u32 pos=0;
-	u32 opcode;
-
-	source = which;
-	while (pos < len)
-	{
-		opcode = ((*(source+pos))<<24) + ((*(source+pos+1))<<16) + ((*(source+pos+2))<<8) + *(source+pos+3);
-		write32(where + pos,opcode);
-		pos+=4;
-	}
 }
 
 int powerpc_load_dol(const char *path, u32 *entry)
@@ -636,7 +621,6 @@ int powerpc_boot_file(const char *path)
 	//FIL fd;
 	//u32 decryptionEndAddress, entry;
 	
-	// loading the ELF file this time here just to have a look at it's debug output and memory addresses
 	gecko_printf("powerpc_load_elf returned %d .\n", fres = powerpc_load_elf(path));
 	//fres = powerpc_load_dol("/bootmii/00000003.app", &entry);
 	//decryptionEndAddress = ( 0x1330100 + read32(0x133008c) ) & ~3; 
@@ -651,7 +635,7 @@ int powerpc_boot_file(const char *path)
 		return 0;
 	}gecko_printf("Running Wii U code.\n");
 	powerpc_upload_oldstub(0x1800);
- 	write_stub(0x1800, stubsb1, stubsb1_size);
+ 	write_stub(0x1800, (u32*)stubsb1, stubsb1_size/4);
 	powerpc_jump_stub(0x1800+stubsb1_size, elfhdr.e_entry);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
@@ -680,7 +664,7 @@ int powerpc_boot_file(const char *path)
 	write32(0x1330104, 0x7c800124); // mtmsr r4
 	write32(0x1330108, 0x48001802); // b 0x1800
 	dc_flushrange((void*)0x1330100,32);
-  udelay(100000);
+	udelay(100000);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 	return fres;
 
