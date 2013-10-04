@@ -255,7 +255,7 @@ int gecko_printf(const char *fmt, ...)
 	i = vsprintf(buffer, fmt, args);
 	va_end(args);
 	fmt = buffer;
-	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
+	if(f_open(&logFile, LOG_FILE, FA_OPEN_EXISTING|FA_WRITE) == FR_OK)
 	{	f_puts(fmt, &logFile);
 		f_close(&logFile);
 	}
