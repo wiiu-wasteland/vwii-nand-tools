@@ -270,7 +270,7 @@ int main(int argc, char **argv) {
 	VIDEO_Init();
 	rmode = VIDEO_GetPreferredMode(NULL);
 	initialize(rmode);
-	u32 i, binSize = 168512;
+	u32 i /*, binSize = 168512*/ ;
 	char *NAND_path = "/title/00000001/00000200/content/00000003.app";
 	CheckArguments(argc, argv);
 	if(__debug){
