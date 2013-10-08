@@ -117,7 +117,9 @@ u32 _main(void *base)
 	ipc_shutdown();
 
 shutdown:
-	gecko_printf("Shutting down interrupts...\n");
+	gecko_printf("Shutting down SDHC...\n");
+	sdhc_exit();
+ 	gecko_printf("Shutting down interrupts...\n");
 	irq_shutdown();
 	gecko_printf("Shutting down caches and MMU...\n");
 	mem_shutdown();
