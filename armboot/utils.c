@@ -18,7 +18,7 @@ Copyright (C) 2008, 2009	Hector Martin "marcan" <marcan@marcansoft.com>
 
 #if defined(CAN_HAZ_USBGECKO) && !defined(LOADER) && !defined(NDEBUG)
 
-#define ascii(X) ((((X) < 0x20) || ((X) > 0x7E) ? '.' : (X)))
+#define ascii(X) (((u8)((X)-0x20) < 0x5F) ? (X) : '.') // replace X<0x20 and X>0x7E with '.'
 
 void hexdump(const void *d, int len) {
   u8 *data;
