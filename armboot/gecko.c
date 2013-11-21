@@ -257,13 +257,13 @@ int gecko_printf(const char *fmt, ...)
 	fmt = buffer;
 	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
 	{	f_lseek(&logFile, logFile.fsize);
-   f_puts(fmt, &logFile);
+		f_puts(fmt, &logFile);
 		f_close(&logFile);
 	}
 	if(gecko_enabled & 1)
 		while(*fmt)
 		{	/*do
-					dc_invalidaterange((void*)0x01200000,32);
+				dc_invalidaterange((void*)0x01200000,32);
 			while(read8(0x01200000));*/
 			dc_invalidaterange((void*)0x01200000,32);
 			if(read8(0x01200000))
