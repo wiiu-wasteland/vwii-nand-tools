@@ -255,70 +255,16 @@ _start:
 	li      r31,0
    
   # Core is now initialized. Check core ID (upir) and jump to wherever
-	mfspr r3,1007
-	cmpwi r3,0
- #  #if (/*core0*/ r3 == 0)
-bne kickstartend
-		# To kickstart the other cores (from core 0):
-      
-		# core 1
-		mfspr r3,947
-		oris r3,r3,0x0020
-		mtspr 947,r3
-		#scr(947) |= 0x00200000;
-      
-  	# core 2
-		mfspr r3,947
-		oris r3,r3,0x0040
-		mtspr 947,r3
-		#scr(947) |= 0x00400000;
-      
-kickstartend:
+
 	mfspr r3,1007
 	cmpwi r3,0
    beq stubend
-# do
-	flagloop:
-   b flagloop
-# (wait for some flag set from core 1 when initialized)
-# (wait for some flag set from core 2 when initialized)
-# while
-	 
-# jump to code start
-	 
-	ifcore1 :
 
-# set a flag for the main core,
-	 
-		# spin in a loop waiting for a vector, or whatever
-	  core1loop0:
-		b core1loop1
-	  core1loop1:
-		b core1loop0
-	 
-	ifcore2 :
- 	 
-# set a flag for the main core,
-	 
-		# spin in a loop waiting for a vector, or whatever
-	  core2loop0:
-		b core2loop1
-	  core2loop1:
-		b core2loop0
-	
+# place (modified?) wii_start.S from Linux wrapper here to leave all cores in the same state
+# then jump to then 2nd entry point for vmlinux (to do)
+# (we're letting the wrapper take charge of the kickstarting and the linux kernel itself take charge of the flagging)
+
 	stubend:
-	# There's probably an easier way to do this but I'd just put them in two separate loops
-	# I've also found that it won't let you write to an address that is currently executing
-	# so I made the loop 2 instructions long
-	
-	#The idea would be to temporarily place a linked branch instruction
-	#over the top of the first "b core1loop" and "b core2loop" instructions
-	#when you want to use those cores and then first thing to do when the core
-	#jumps to the new instructions would be put the old "b core1loop" and "b core2loop"
-	#instruction back in place. That way the return instruction ("blr") from the custom code would
-	#just pop back to the SECOND "b core1loop" / "b core2loop" instruction which would
-	#put the core back in the original loop.
-	
-	 
+
 	# Note: the Cafe OS kernel actually then uses core 2 as the main core
 	# after starting all three. This is probably unimportant.
