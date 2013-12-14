@@ -626,6 +626,9 @@ int powerpc_boot_file(const char *path)
 	//decryptionEndAddress = ( 0x1330100 + read32(0x133008c + read32(0x1330008)) -1 ) & ~3; 
 	//gecko_printf("powerpc_load_dol returned %d .\n", fres);
 	if(fres) return fres;
+	// give PPC back it's control of the lights
+    set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
+    set32(HW_GPIO1OWNER, HW_GPIO1_SLOT);
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
 	if((read32(0xd8005A0) & 0xFFFF0000) != 0xCAFE0000)
 	{	gecko_printf("Running old Wii code.\n");
@@ -641,7 +644,6 @@ int powerpc_boot_file(const char *path)
 	//this is where the end of our entry point loading stub will be
 	u32 oldValue = read32(0x1330108);
 
-    //set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
 	set32(HW_AHBPROT, 0xFFFFFFFF);
 	gecko_printf("Resetting PPC. End on-screen debug output.\n\n");

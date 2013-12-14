@@ -260,9 +260,7 @@ _start:
 	cmpwi r3,0
    beq stubend
 
-# place (modified?) wii_start.S from Linux wrapper here to leave all cores in the same state
-# then jump to then 2nd entry point for vmlinux (to do)
-# (we're letting the wrapper take charge of the kickstarting and the linux kernel itself take charge of the flagging)
+#include "wii-head.S"
 
 	stubend:
 
