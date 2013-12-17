@@ -110,7 +110,7 @@ _mmu_off:
 	isync
 
 	/* initialize arguments */
-	mfspr 3,1007 /*I think Linux expects the processor number to be in r3 (?) (even though it replaces it ... but we can fix that) */
+	mfspr 3,1007 /*I think Linux expects the processor number to be in r3 (?) (even though it replaces it ... but we'll skip that below) */
 	li	4, 0
 	li	5, 0
 
@@ -136,8 +136,11 @@ _mmu_on:
 	/* jump to the Linux kernel entry point for non-boot cores */
 
 	lis 8, 0xc000
-	ori 8, 8, 0x00c0
+	ori 8, 8, 0x00c4
+// then Linux entry point is 0xc00000c0 for extra cores
+// BUT the first instruction defines the core number as 1 so we'll skip that one
 	mtsrr0 8
-	li 8, 0
+	mfmsr 8
+// keeping current value
 	mtsrr1 8
 	rfi

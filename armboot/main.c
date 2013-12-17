@@ -34,7 +34,7 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 FATFS fatfs;
 
 u32 _main(void *base)
-{	sensorPrep();
+{	//sensorPrep();
 	FRESULT fres;
 	int res;
 	u32 vector=0;
