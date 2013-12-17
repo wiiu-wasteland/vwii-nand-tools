@@ -33,7 +33,7 @@ static u8 gecko_console_enabled = 0;
 #define LOG_FILE "/log.txt"
 // If the default log method doesn't work, comment out the next line
 // #define TEST // (we were already practically using the non-test method anyway)
-static FIL *__log_file = NULL;
+static FIL __log_file;
 static bool __log_initialized = false;
 
 static u32 _gecko_command(u32 command)
@@ -213,11 +213,11 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 #endif
 
 void Log_Init() {
-	if (!__log_initialized && f_open(__log_file, LOG_FILE, FA_WRITE|FA_OPEN_ALWAYS) == FR_OK)
-	{	f_close(__log_file);
-		__log_initialized = (f_open(__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
+	if (!__log_initialized && f_open(&__log_file, LOG_FILE, FA_WRITE|FA_OPEN_ALWAYS) == FR_OK)
+	{	f_close(&__log_file);
+		__log_initialized = (f_open(&__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
 		if(__log_initialized)
-			f_lseek(&__log_file, __log_file.fsize);
+			f_lseek(&__log_file, &__log_file.fsize);
 	}
 }
 
@@ -273,11 +273,11 @@ int gecko_printf(const char *fmt, ...)
 	if (__log_initialized)
 	{
 		#ifdef TEST
-		f_printf(__log_file, format, args);
+		f_printf(&__log_file, format, args);
 		#else
-		f_puts(buffer, __log_file);
+		f_puts(buffer, &__log_file);
 		#endif
-		f_sync(__log_file);
+		f_sync(&__log_file);
 	}
 /*	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
 	{	f_lseek(&logFile, logFile.fsize);
