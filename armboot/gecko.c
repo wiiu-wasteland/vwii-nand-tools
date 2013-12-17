@@ -25,12 +25,17 @@ Copyright (C) 2009		Andre Heider "dhewg" <dhewg@wiibrew.org>
 #include "gecko.h"
 #include "memory.h"
 #include "ff.h"
+#include "filelog.h"
 
 static u8 gecko_found = 0;
 static u8 gecko_enabled = 0;
 static u8 gecko_console_enabled = 0;
 
-#define LOG_FILE "/bootmii/log.txt"
+#define LOG_FILE "/log.txt"
+// If the default log method doesn't work, comment out the next line
+// #define TEST // (we were already practically using the non-test method anyway)
+static FIL *__log_file = NULL;
+static bool __log_initialized = false;
 
 static u32 _gecko_command(u32 command)
 {
@@ -208,9 +213,19 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 }
 #endif
 
+void Log_Init() {
+	if (!__log_initialized && f_open(__log_file, LOG_FILE, FA_WRITE|FA_OPEN_ALWAYS) == FR_OK)
+	{	f_close(__log_file);
+		__log_initialized = (f_open(__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
+		if(__log_initialized)
+			f_lseek(&logFile, logFile.fsize);
+	}
+}
+
 void gecko_init(void)
 {	if(read16(0x01200002) == 0XDEB6)
 		gecko_enabled |= 1;
+
 	write32(EXI0_CSR, 0);
 	write32(EXI1_CSR, 0);
 	write32(EXI2_CSR, 0);
@@ -255,12 +270,22 @@ int gecko_printf(const char *fmt, ...)
 	i = vsprintf(buffer, fmt, args);
 	va_end(args);
 	fmt = buffer;
-	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
+	
+	if (__log_initialized)
+	{
+		#ifdef TEST
+		f_printf(__log_file, format, args);
+		#else
+		f_puts(buffer, __log_file);
+		#endif
+		f_sync(__log_file);
+	}
+/*	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
 	{	f_lseek(&logFile, logFile.fsize);
 		f_puts(fmt, &logFile);
 		f_close(&logFile);
 	}
-	if(gecko_enabled & 1)
+*/	if(gecko_enabled & 1)
 		while(*fmt)
 		{	/*do
 				dc_invalidaterange((void*)0x01200000,32);

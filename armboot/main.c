@@ -82,6 +82,8 @@ u32 _main(void *base)
 	gecko_printf("Mounting SD...\n");
 	fres = f_mount(0, &fatfs);
 
+	Log_Init(); // if the file already exists
+
 	if (read32(0x0d800190) & 2) {
 		gecko_printf("GameCube compatibility mode detected...\n");
 		vector = boot2_run(1, 0x101);
