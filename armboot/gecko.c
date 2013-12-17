@@ -25,7 +25,6 @@ Copyright (C) 2009		Andre Heider "dhewg" <dhewg@wiibrew.org>
 #include "gecko.h"
 #include "memory.h"
 #include "ff.h"
-#include "filelog.h"
 
 static u8 gecko_found = 0;
 static u8 gecko_enabled = 0;
