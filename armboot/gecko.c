@@ -217,7 +217,7 @@ void Log_Init() {
 	{	f_close(&__log_file);
 		__log_initialized = (f_open(&__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
 		if(__log_initialized)
-			f_lseek(&__log_file, &__log_file.fsize);
+			f_lseek(&__log_file, __log_file.fsize);
 	}
 }
 
