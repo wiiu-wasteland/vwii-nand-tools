@@ -217,7 +217,7 @@ void Log_Init() {
 	{	f_close(__log_file);
 		__log_initialized = (f_open(__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
 		if(__log_initialized)
-			f_lseek(&logFile, logFile.fsize);
+			f_lseek(&__log_file, __log_file.fsize);
 	}
 }
 
@@ -263,7 +263,7 @@ int gecko_printf(const char *fmt, ...)
 	va_list args;
 	char buffer[256];
 	int i;
-	FIL logFile;
+	//FIL logFile;
 
 	va_start(args, fmt);
 	i = vsprintf(buffer, fmt, args);
