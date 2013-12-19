@@ -25,16 +25,11 @@ Copyright (C) 2009		Andre Heider "dhewg" <dhewg@wiibrew.org>
 #include "gecko.h"
 #include "memory.h"
 #include "ff.h"
+#include "filelog.h"
 
 static u8 gecko_found = 0;
 static u8 gecko_enabled = 0;
 static u8 gecko_console_enabled = 0;
-
-#define LOG_FILE "/log.txt"
-// If the default log method doesn't work, comment out the next line
-// #define TEST // (we were already practically using the non-test method anyway)
-static FIL __log_file;
-static bool __log_initialized = false;
 
 static u32 _gecko_command(u32 command)
 {
@@ -212,15 +207,6 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 }
 #endif
 
-void Log_Init() {
-	if (!__log_initialized && f_open(&__log_file, LOG_FILE, FA_WRITE|FA_OPEN_ALWAYS) == FR_OK)
-	{	f_close(&__log_file);
-		__log_initialized = (f_open(&__log_file, LOG_FILE, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK);
-		if(__log_initialized)
-			f_lseek(&__log_file, __log_file.fsize);
-	}
-}
-
 void gecko_init(void)
 {	if(read16(0x01200002) == 0XDEB6)
 		gecko_enabled |= 1;
@@ -257,8 +243,7 @@ u8 gecko_enable_console(const u8 enable)
 
 #ifndef NDEBUG
 int gecko_printf(const char *fmt, ...)
-{	
-	if(!gecko_enabled)
+{	if(!gecko_enabled)
 		return 0;
 	va_list args;
 	char buffer[256];
@@ -266,25 +251,12 @@ int gecko_printf(const char *fmt, ...)
 	//FIL logFile;
 
 	va_start(args, fmt);
-	i = vsprintf(buffer, fmt, args);
+	vsnprintf(buffer, sizeof(buffer)-1, fmt, args);
 	va_end(args);
+	Log(buffer);
 	fmt = buffer;
 	
-	if (__log_initialized)
-	{
-		#ifdef TEST
-		f_printf(&__log_file, format, args);
-		#else
-		f_puts(buffer, &__log_file);
-		#endif
-		f_sync(&__log_file);
-	}
-/*	if(f_open(&logFile, LOG_FILE, FA_OPEN_ALWAYS|FA_WRITE) == FR_OK)
-	{	f_lseek(&logFile, logFile.fsize);
-		f_puts(fmt, &logFile);
-		f_close(&logFile);
-	}
-*/	if(gecko_enabled & 1)
+	if(gecko_enabled & 1)
 		while(*fmt)
 		{	/*do
 				dc_invalidaterange((void*)0x01200000,32);
@@ -307,18 +279,6 @@ int gecko_printf(const char *fmt, ...)
 			dc_flushrange((void*)0x01200000,32);
 			fmt++;
 		}
-/*		{	dc_invalidaterange((void*)0x01200000,256);
-			for(c = 0x01200000; c<0x01200099; c++)
-				if(!read8(c))
-					break;
-			if(c >= 0x01200099)
-				break;
-			write8(c+1, 0);
-			write8(c, *fmt);
-			dc_flushrange((void*)0x01200000,256);
-			fmt++;
-		}
-*/	
 	return 0;
 #ifdef GECKO_SAFE
 	return gecko_sendbuffer_safe(buffer, i);

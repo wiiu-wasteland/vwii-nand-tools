@@ -28,7 +28,9 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 #include "crypto.h"
 #include "nand.h"
 #include "boot2.h"
+#include "filelog.h"
 
+#define LOG_FILE "/log.txt"
 #define PPC_BOOT_FILE "/bootmii/ppcboot.elf"
 
 FATFS fatfs;
@@ -82,7 +84,7 @@ u32 _main(void *base)
 	gecko_printf("Mounting SD...\n");
 	fres = f_mount(0, &fatfs);
 
-	Log_Init(); // if the file already exists
+	Log_Init(LOG_FILE);
 
 	if (read32(0x0d800190) & 2) {
 		gecko_printf("GameCube compatibility mode detected...\n");
@@ -120,6 +122,7 @@ u32 _main(void *base)
 
 shutdown:
 	gecko_printf("Shutting down SDHC...\n");
+	Log_Deinit();
 	sdhc_exit();
  	gecko_printf("Shutting down interrupts...\n");
 	irq_shutdown();

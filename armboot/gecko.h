@@ -18,7 +18,6 @@ Copyright (C) 2009		Andre Heider "dhewg" <dhewg@wiibrew.org>
 
 #include "types.h"
 
-void Log_Init();
 void gecko_init(void);
 u8 gecko_enable_console(const u8 enable);
 u8 gecko_enable(const u8 enable);
