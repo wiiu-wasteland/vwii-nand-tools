@@ -31,8 +31,9 @@ THE SOFTWARE.
 #ifdef ENABLE_LOG
 static FIL __log_file;
 static bool __log_initialized = false;
-
+#endif
 bool Log_Init(const char *filename) {
+#ifdef ENABLE_LOG
 	if (__log_initialized) return true;
 	if (f_open(&__log_file, filename, FA_WRITE|FA_OPEN_ALWAYS) != FR_OK)
 		return false;
@@ -40,6 +41,9 @@ bool Log_Init(const char *filename) {
 	if(f_open(&__log_file, filename, FA_WRITE|FA_CREATE_ALWAYS) == FR_OK)
 		__log_initialized = true;
 	return __log_initialized;
+#else
+	return false;
+#endif
 }
 
 void Log_Deinit(void) {

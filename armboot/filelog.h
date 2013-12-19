@@ -27,12 +27,11 @@ THE SOFTWARE.
 // Comment out to disable all filelog code
 #define ENABLE_LOG
 
-#ifdef ENABLE_LOG
 bool Log_Init(const char *filename);
+#ifdef ENABLE_LOG
 void Log_Deinit(void);
 void Log(const char *format, ...);
 #else
-#define Log_Init(X) 0
 #define Log_Deinit()
 #define Log(...)
 
