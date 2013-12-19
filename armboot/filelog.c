@@ -28,9 +28,7 @@ THE SOFTWARE.
 #include "vsprintf.h"
 #include "filelog.h"
 
-// If the default method doesn't work, comment out the next line
-#define TEST
-
+#ifdef ENABLE_LOG
 static FIL __log_file;
 static bool __log_initialized = false;
 
@@ -52,17 +50,15 @@ void Log_Deinit(void) {
 
 void Log(const char *format, ...) {	
 	if (!__log_initialized) return;
+	
 	va_list args;
 	va_start(args, format);
-	#ifdef TEST
-	f_printf(&__log_file, format, args);
-	#else
 	char buffer[256] = {0};
 	vsnprintf(buffer, sizeof(buffer)-1, format, args);
 	f_puts(buffer, &__log_file);
-	#endif
 	va_end(args);
 	
 	f_sync(&__log_file);
 	return;
 }
+#endif
