@@ -45,7 +45,7 @@ bool Log_Init(const char *filename) {
 	return false;
 #endif
 }
-
+#ifdef ENABLE_LOG
 void Log_Deinit(void) {
 	if (__log_initialized) f_close(&__log_file);
 	__log_initialized = false;
