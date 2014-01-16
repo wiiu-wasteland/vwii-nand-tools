@@ -637,12 +637,11 @@ int powerpc_boot_file(const char *path)
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}gecko_printf("Running Wii U code.\n");
-	powerpc_upload_oldstub(0x1800);
- 	write_stub(0x1800, (u32*)stubsb1, stubsb1_size/4);
-	powerpc_jump_stub(0x1800+stubsb1_size, elfhdr.e_entry);
+	powerpc_upload_oldstub(e_entry);
+ 	//write_stub(0x1800, (u32*)stubsb1, stubsb1_size/4);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
-	u32 oldValue = read32(0x1330108);
+	u32 oldValue = read32(0x1330100);
 
 	set32(HW_DIFLAGS,DIFLAGS_BOOT_CODE);
 	set32(HW_AHBPROT, 0xFFFFFFFF);
@@ -660,11 +659,12 @@ int powerpc_boot_file(const char *path)
 	do
 	{	dc_invalidaterange((void*)0x1330100,32);
 		//ahb_flush_from(AHB_1);
-	}while(oldValue == read32(0x1330108));
+	}while(oldValue == read32(0x1330100));
 
-	write32(0x1330100, 0x38802000); // li r4, 0x2000
-	write32(0x1330104, 0x7c800124); // mtmsr r4
-	write32(0x1330108, 0x48001802); // b 0x1800
+	//write32(0x1330100, 0x38802000); // li r4, 0x2000
+	//write32(0x1330104, 0x7c800124); // mtmsr r4
+	//write32(0x1330108, 0x48001802); // b 0x1800
+	powerpc_jump_stub(0x1330100, elfhdr.e_entry);
 	dc_flushrange((void*)0x1330100,32);
 	udelay(100000);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
