@@ -637,7 +637,7 @@ int powerpc_boot_file(const char *path)
 		gecko_printf("PPC booted!\n");
 		return 0;
 	}gecko_printf("Running Wii U code.\n");
-	powerpc_upload_oldstub(e_entry);
+	powerpc_upload_oldstub(elfhdr.e_entry);
  	//write_stub(0x1800, (u32*)stubsb1, stubsb1_size/4);
 	dc_flushall();
 	//this is where the end of our entry point loading stub will be
