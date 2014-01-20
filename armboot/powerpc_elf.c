@@ -629,6 +629,7 @@ int powerpc_boot_file(const char *path)
 	// give PPC back it's control of the lights
     set32(HW_GPIO1OWNER, HW_GPIO1_SENSE);
     set32(HW_GPIO1OWNER, HW_GPIO1_SLOT);
+	write32(0x2fe0, 0x0);
 	gecko_printf("0xd8005A0 register value is %08x.\n", read32(0xd8005A0));
 	if((read32(0xd8005A0) & 0xFFFF0000) != 0xCAFE0000)
 	{	gecko_printf("Running old Wii code.\n");
