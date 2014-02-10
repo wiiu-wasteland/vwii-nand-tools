@@ -335,7 +335,7 @@ u32 ipc_process_slow(void)
 	u32 vector = 0;
 
 	while (!vector) {
-		while (!vector && (slow_queue_head != slow_queue_tail)) {
+ //  	while (!vector && (slow_queue_head != slow_queue_tail)) {
 			vector = process_slow(&slow_queue[slow_queue_head]);
 			slow_queue_head = (slow_queue_head+1)&(IPC_SLOW_SIZE-1);
 			dc_invalidaterange((void*)0x2fe0, 32);
@@ -345,7 +345,7 @@ u32 ipc_process_slow(void)
 				dc_flushrange((void*)0x2fe0, 32);
 			}
 		}
-
+/*
 		if (!vector)
 		{
 			gecko_process();
@@ -356,6 +356,6 @@ u32 ipc_process_slow(void)
 			irq_restore(cookie);
 		}
 	}
-	return vector;
+ */  return vector;
 }
 
