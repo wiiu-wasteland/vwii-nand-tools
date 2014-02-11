@@ -335,9 +335,9 @@ u32 ipc_process_slow(void)
 	u32 vector = 0;
 
 	while (!vector) {
- //  	while (!vector && (slow_queue_head != slow_queue_tail)) {
+   	if (slow_queue_head != slow_queue_tail) {
 			vector = process_slow(&slow_queue[slow_queue_head]);
-			slow_queue_head = (slow_queue_head+1)&(IPC_SLOW_SIZE-1);
+			slow_queue_head = (slow_queue_head+1)&(IPC_SLOW_SIZE-1);}
 			dc_invalidaterange((void*)0x2fe0, 32);
 			if(read8(0x2fe0))
 			{	gecko_printf((char*)0x2fe0);
