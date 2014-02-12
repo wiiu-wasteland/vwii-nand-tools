@@ -242,43 +242,70 @@ u8 gecko_enable_console(const u8 enable)
 }
 
 #ifndef NDEBUG
+// this is to set 38400 baud since it was the fastest standard speed
+// that was fairly close to a whole number of microseconds for the delay
+#define SERIAL_DELAY 26
+// this is set for 8 data bits with no parity and one stop bit
+void LOLserial_putc(char c)
+{	int i;
+	sensorbarOn();	// start bit
+	udelay(SERIAL_DELAY);
+	for(i=0; i<8; i++)
+	{	if(c&1)
+			sensorbarOn();
+		else sensorbarOff();
+		udelay(SERIAL_DELAY);
+		c>>=1;
+	}
+	sensorbarOff();	// stop bit
+	udelay(SERIAL_DELAY);
+}
+
 int gecko_printf(const char *fmt, ...)
 {	if(!gecko_enabled)
 		return 0;
 	va_list args;
 	char buffer[256];
 	int i;
+	u32 timeout;
+	bool ready;
 	//FIL logFile;
 
 	va_start(args, fmt);
 	vsnprintf(buffer, sizeof(buffer)-1, fmt, args);
 	va_end(args);
-	Log(buffer);
-	fmt = buffer;
+	if(gecko_enabled & 2)
+		Log(buffer);
 	
-	if(gecko_enabled & 1)
+	if(gecko_enabled & 4)
+	{	fmt = buffer;
 		while(*fmt)
-		{	/*do
-				dc_invalidaterange((void*)0x01200000,32);
-			while(read8(0x01200000));*/
-			dc_invalidaterange((void*)0x01200000,32);
-			if(read8(0x01200000))
-			{	udelay(20000); // wait for PPC's vsync
-				dc_invalidaterange((void*)0x01200000,32);
-				if(read8(0x01200000))
-				{	udelay(20000); // wait for PPC's vsync AGAIN
-					dc_invalidaterange((void*)0x01200000,32);
-					if(read8(0x01200000))
-					{	gecko_enable(0);
-						write8(0x01200000, 'X');
-						break;
-					}
+			LOLserial_putc(*(fmt++));
+	}
+	if(gecko_enabled & 1)
+	{	fmt = buffer;
+		while(*fmt)
+		{	timeout = read32(HW_TIMER)+38000;
+			ready = false;
+			while(read32(HW_TIMER) < timeout)
+			{	dc_invalidaterange((void*)0x01200000,32);
+				if(!read8(0x01200000))
+				{	ready = true;
+					break;
 				}
 			}
-			write8(0x01200000, *fmt);
-			dc_flushrange((void*)0x01200000,32);
-			fmt++;
+			if(ready)
+			{	write8(0x01200000, *(fmt++));
+				dc_flushrange((void*)0x01200000,32);
+			}
+			else
+			{	gecko_enable(0);
+				write8(0x01200000, 'X');
+				dc_flushrange((void*)0x01200000,32);
+				break;
+			}
 		}
+	}
 	return 0;
 #ifdef GECKO_SAFE
 	return gecko_sendbuffer_safe(buffer, i);
