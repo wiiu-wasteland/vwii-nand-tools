@@ -31,11 +31,16 @@
 
 typedef struct armboot_config armboot_config;
 struct armboot_config
-{	char str[2];		// character sent from armboot to be printed on screen
+{	char str;		// character sent from armboot to be printed on screen
+	u8 debug_config;	// setting different bits here for what kind of debug is used
 	u16 debug_magic;	// set to 0xDEB6 if we want armboot to send us it's debug
 	u32 path_magic;		// set to 0x016AE570 if se are sending a custom ppcboot path
 	char buf[256];		// a buffer to put the string in where there will still be space for mini
 };
+
+#define SET_SCREEN_DEBUG	1<<0
+#define SET_LOG_DEBUG		1<<1
+#define SET_LOLSERIAL_DEBUG	1<<2
 
 bool __debug = false;
 bool __useIOS = true;
@@ -283,8 +288,8 @@ int main(int argc, char **argv) {
 		//printf("loadTMDfromNAND() returned %d for IOS80.\n", loadTMDfromNAND("/title/00000001/00000050/content/title.tmd", NAND_path+33, binSize));
 		printf("loadBINfromNAND() returned %d .\n", loadBINfromNAND(NAND_path, binSize));
 */		printf("Setting magic word.\n");
-		redirectedGecko->str[0] = '\0';
-		redirectedGecko->str[1] = '\0';
+		redirectedGecko->str = '\0';
+		redirectedGecko->debug_config = SET_SCREEN_DEBUG | SET_LOG_DEBUG;
 		redirectedGecko->debug_magic = 0xDEB6;
 		DCFlushRange(redirectedGecko, 32);
 	}else{
@@ -310,6 +315,10 @@ int main(int argc, char **argv) {
 			printf("IOS80 loaded from NAND.\n");
 		}
 */		CHANGE_COLOR(WHITE); // Restore default
+		redirectedGecko->str = '\0';
+		redirectedGecko->debug_config = SET_LOG_DEBUG;
+		redirectedGecko->debug_magic = 0xDEB6;
+		DCFlushRange(redirectedGecko, 32);
 	}
 	if(__useIOS){
 	
@@ -388,6 +397,8 @@ int main(int argc, char **argv) {
 		}
 	}
 	if(__debug) {
+		do DCInvalidateRange(redirectedGecko, 32);
+		while(redirectedGecko->debug_config);
 		printf("Waiting for mini gecko output.\n");
 		char* miniDebug = (char*)redirectedGecko;
 		while(true)

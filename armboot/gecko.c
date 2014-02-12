@@ -209,7 +209,10 @@ static int gecko_sendbuffer_safe(const void *buffer, u32 size)
 
 void gecko_init(void)
 {	if(read16(0x01200002) == 0XDEB6)
-		gecko_enabled |= 1;
+	{	gecko_enabled = read8(0x01200001);
+		write8(0x01200001, 0);
+		dc_flushrange((void*)0x01200000, 32);
+	}
 
 	write32(EXI0_CSR, 0);
 	write32(EXI1_CSR, 0);

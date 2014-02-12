@@ -26,20 +26,26 @@ void powerpc_upload_oldstub(u32 entry)
 
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 
+	// li r3, 0x2fe0
+	write32(EXI_BOOT_BASE + 4 * 0, 0x38602fe0);
+	// stw r3, 0(r3)
+	write32(EXI_BOOT_BASE + 4 * 1, 0x90630000);
+	// dcbf 0, r3
+	write32(EXI_BOOT_BASE + 4 * 2, 0x7c0018ac);
 	// lis r3, entry@h
-	write32(EXI_BOOT_BASE + 4 * 0, 0x3c600000 | entry >> 16);
+	write32(EXI_BOOT_BASE + 4 * 3, 0x3c600000 | entry >> 16);
 	// ori r3, r3, entry@l
-	write32(EXI_BOOT_BASE + 4 * 1, 0x60630000 | (entry & 0xffff));
-	// mtsrr0 r3
-	write32(EXI_BOOT_BASE + 4 * 2, 0x7c7a03a6);
+	write32(EXI_BOOT_BASE + 4 * 4, 0x60630000 | (entry & 0xffff));
+	// mtsrr0 r
+	write32(EXI_BOOT_BASE + 4 * 5, 0x7c7a03a6);
 	// li r3, 0
-	write32(EXI_BOOT_BASE + 4 * 3, 0x38600000);
+	write32(EXI_BOOT_BASE + 4 * 6, 0x38600000);
 	// mtsrr1 r3
-	write32(EXI_BOOT_BASE + 4 * 4, 0x7c7b03a6);
+	write32(EXI_BOOT_BASE + 4 * 7, 0x7c7b03a6);
 	// rfi
-	write32(EXI_BOOT_BASE + 4 * 5, 0x4c000064);
+	write32(EXI_BOOT_BASE + 4 * 8, 0x4c000064);
 
-	for (i = 6; i < 0x10; ++i)
+	for (i = 9; i < 0x10; ++i)
 		write32(EXI_BOOT_BASE + 4 * i, 0);
 
 	set32(HW_DIFLAGS, DIFLAGS_BOOT_CODE);
