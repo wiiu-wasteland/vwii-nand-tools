@@ -654,8 +654,14 @@ int powerpc_boot_file(const char *path)
 
 	// To DO : this is temporary to wait until cores 2 and 1 have spun up
 	// needs to be moved to the PPC side in case PPC doesn't want to use them
-	do dc_invalidaterange((void*)0x2fe0,32);
-	while(!read16(0x2fe2));
+	do
+	{	dc_invalidaterange((void*)0x2fe0,32);
+		if(read8(0x2fe0))
+		{	gecko_printf((char*)0x2fe0);
+			write8(0x2fe0, '\0');
+			dc_flushrange((void*)0x2fe0, 32);
+		}
+	}while(!read16(0x2fe2));
 	udelay(100);
 	set32(HW_EXICTRL, EXICTRL_ENABLE_EXI);
 
