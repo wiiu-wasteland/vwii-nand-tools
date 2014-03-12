@@ -331,7 +331,7 @@ void ipc_shutdown(void)
 }
 
 u32 ipc_process_slow(void)
-{
+{	char received[] = {'\0', '\0'}
 	u32 vector = 0;
 
 	while (!vector) {
@@ -340,10 +340,10 @@ u32 ipc_process_slow(void)
 			slow_queue_head = (slow_queue_head+1)&(IPC_SLOW_SIZE-1);
 		}
 		dc_invalidaterange((void*)0x2fe0, 32);
-		if(read8(0x2fe0))
-		{	gecko_printf((char*)0x2fe0);
-			write8(0x2fe0, '\0');
+		if( (received[0] = read8(0x2fe0)) )
+		{	write8(0x2fe0, '\0');
 			dc_flushrange((void*)0x2fe0, 32);
+			gecko_printf(received);
 		}
 	}
 /*
