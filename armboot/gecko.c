@@ -272,31 +272,22 @@ int gecko_printf(const char *fmt, ...)
 	int i;
 	u32 timeout;
 	bool ready;
-	//FIL logFile;
 
 	va_start(args, fmt);
 	vsnprintf(buffer, sizeof(buffer)-1, fmt, args);
 	va_end(args);
-	if(gecko_enabled & 2)
-		Log(buffer);
-	
-	if(gecko_enabled & 4)
-	{	fmt = buffer;
-		while(*fmt)
-			LOLserial_putc(*(fmt++));
-	}
 	if(gecko_enabled & 1)
 	{	fmt = buffer;
 		while(*fmt)
 		{	timeout = read32(HW_TIMER)+38000;
 			ready = false;
-			while(read32(HW_TIMER) < timeout)
+			do
 			{	dc_invalidaterange((void*)0x01200000,32);
 				if(!read8(0x01200000))
 				{	ready = true;
 					break;
 				}
-			}
+			}while(read32(HW_TIMER) < timeout);
 			if(ready)
 			{	write8(0x01200000, *(fmt++));
 				dc_flushrange((void*)0x01200000,32);
@@ -308,6 +299,13 @@ int gecko_printf(const char *fmt, ...)
 				break;
 			}
 		}
+	}
+	if(gecko_enabled & 2)
+		Log(buffer);
+	if(gecko_enabled & 4)
+	{	fmt = buffer;
+		while(*fmt)
+			LOLserial_putc(*(fmt++));
 	}
 	return 0;
 #ifdef GECKO_SAFE

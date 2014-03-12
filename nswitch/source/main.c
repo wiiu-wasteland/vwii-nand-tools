@@ -401,15 +401,16 @@ int main(int argc, char **argv) {
 		while(redirectedGecko->debug_config);
 		printf("Waiting for mini gecko output.\n");
 		char* miniDebug = (char*)redirectedGecko;
+		char received[] = {'\0', '\0'};
 		while(true)
 		{	do
 			{	// Repeat until *miniDebug != 0 ("")
 				DCInvalidateRange(miniDebug, 32);
 			} while(!*miniDebug);
-			
-			printf(miniDebug);
+			received[0] = *miniDebug;
 			*miniDebug = '\0';
 			DCFlushRange(miniDebug, 32);
+			printf(received);
 		}
 	} else {
 		printf("Waiting for ARM to reset PPC.");
