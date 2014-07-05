@@ -25,5 +25,5 @@ NOTES
    build properly without first compiling the source for armboot.
 
 2. 'build' is a shell script that will likely only run in unix environments.
-   In order to build on Windoze, you will likely have to enter each source tree
+   In order to build on Windows, you will likely have to enter each source tree
    individually and build manually.
