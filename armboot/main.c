@@ -11,24 +11,21 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 # see file COPYING or http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 */
 
-#include "types.h"
-#include "utils.h"
+#include "common/types.h"
+#include "common/utils.h"
 #include "start.h"
-#include "hollywood.h"
-#include "sdhc.h"
-#include "string.h"
-#include "memory.h"
-#include "gecko.h"
-#include "ff.h"
-#include "panic.h"
-#include "powerpc_elf.h"
-#include "irq.h"
-#include "ipc.h"
-#include "exception.h"
-#include "crypto.h"
-#include "nand.h"
-#include "boot2.h"
-#include "filelog.h"
+#include "system/hollywood.h"
+#include "storage/sdhc.h"
+#include "common/string.h"
+#include "system/memory.h"
+#include "video/gecko.h"
+#include "storage/ff.h"
+#include "system/panic.h"
+#include "system/irq.h"
+#include "system/exception.h"
+#include "system/crypto.h"
+#include "storage/nand.h"
+#include "dump.h"
 
 #define LOG_FILE "/log.txt"
 #define PPC_BOOT_FILE "/bootmii/ppcboot.elf"
@@ -36,13 +33,12 @@ Copyright (C) 2009		John Kelley <wiidev@kelley.ca>
 FATFS fatfs;
 
 u32 _main(void *base)
-{	//sensorPrep();
+{
 	FRESULT fres;
-	int res;
-	u32 vector=0;
 	(void)base;
-
+    
 	gecko_init();
+
 	write32(HW_RESETS, 0x031018ff);
 	//write32(0x0D8005E0, 0x7);
 	udelay(100000);
@@ -54,13 +50,10 @@ u32 _main(void *base)
 	gecko_printf("Configuring caches and MMU...\n");
 	mem_initialize();
 
-	gecko_printf("IOSflags: %08x %08x %08x\n",
-		read32(0xffffff00), read32(0xffffff04), read32(0xffffff08));
-	gecko_printf("          %08x %08x %08x\n",
-		read32(0xffffff0c), read32(0xffffff10), read32(0xffffff14));
+	gecko_printf("IOSflags: %08x %08x %08x\n", read32(0xffffff00), read32(0xffffff04), read32(0xffffff08));
+	gecko_printf("          %08x %08x %08x\n", read32(0xffffff0c), read32(0xffffff10), read32(0xffffff14));
 
 	irq_initialize();
-//	irq_enable(IRQ_GPIO1B);
 	irq_enable(IRQ_GPIO1);
 	irq_enable(IRQ_RESET);
 	irq_enable(IRQ_TIMER);
@@ -70,25 +63,13 @@ u32 _main(void *base)
 	crypto_initialize();
 	gecko_printf("crypto support initialized\n");
 
-	nand_initialize();
-	gecko_printf("NAND initialized.\n");
-
-	boot2_init();
-
-	gecko_printf("Initializing IPC...\n");
-	ipc_initialize();
-
 	gecko_printf("Initializing SDHC...\n");
 	sdhc_init();
 
 	gecko_printf("Mounting SD...\n");
 	fres = f_mount(0, &fatfs);
 
-	Log_Init(LOG_FILE);
-
 	if (read32(0x0d800190) & 2) {
-		gecko_printf("GameCube compatibility mode detected...\n");
-		vector = boot2_run(1, 0x101);
 		goto shutdown;
 	}
 	
@@ -97,39 +78,23 @@ u32 _main(void *base)
 		panic2(0, PANIC_MOUNT);
 	}
 
-	
+	/*int i = 0;
+	while(i < 300) {
+		gecko_printf("Test %d\n", i++);
+		udelay(1000000);
+	}*/
 
-	if(read32(0x01200004) == 0x016AE570)
-	{	gecko_printf("Trying to boot:%s\n", (char*)0x01200008);
-		res = powerpc_boot_file((char*)0x01200008);
-	}
-	else
-	{	gecko_printf("Trying to boot:" PPC_BOOT_FILE "\n");
-		res = powerpc_boot_file(PPC_BOOT_FILE);
-	}
-	if(res < 0) {
-		gecko_printf("Failed to boot PPC: %d\n", res);
-		gecko_printf("Booting System Menu\n");
-		vector = boot2_run(1, 2);
-		goto shutdown;
-	}
-
-	gecko_printf("Going into IPC mainloop...\n");
-	vector = ipc_process_slow();
-	gecko_printf("IPC mainloop done!\n");
-	gecko_printf("Shutting down IPC...\n");
-	ipc_shutdown();
+	// dump slc nand
+	nand_dump_slc_raw(NAND_BANK_SLC);
 
 shutdown:
 	gecko_printf("Shutting down SDHC...\n");
-	Log_Deinit();
 	sdhc_exit();
  	gecko_printf("Shutting down interrupts...\n");
 	irq_shutdown();
 	gecko_printf("Shutting down caches and MMU...\n");
 	mem_shutdown();
-
-	gecko_printf("Vectoring to 0x%08x...\n", vector);
-	return vector;
+	
+	systemReset();
+	return 0;
 }
-

@@ -52,11 +52,6 @@ SECTIONS
 		. = ALIGN(4);
 		__bss2_end = . ;
 	} >mem2
-	
-	.ipcinfo __mem2_area_end - 4 :
-	{
-		LONG(__ipc_info);
-	} >mem2	
 
 	.init :
 	{

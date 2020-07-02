@@ -24,11 +24,14 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-
 CFLAGS	= -g -O2 -Wall $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS	= -g $(MACHDEP) -Wl,-Map,$(notdir $@).map
+
+ifeq ($(IS_NAND_WRITER),1)
+CFLAGS	+= -DIS_NAND_WRITER=1
+endif
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project

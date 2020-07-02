@@ -1,5 +1,6 @@
 include ../starlet.mk
 
+CFLAGS += -fno-builtin -ffreestanding
 CFLAGS += -fpic
 LDSCRIPT = stub.ld
 LIBS = -lgcc
